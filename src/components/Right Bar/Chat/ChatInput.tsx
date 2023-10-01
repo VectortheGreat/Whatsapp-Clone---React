@@ -1,7 +1,7 @@
 const ChatInput = () => {
   return (
-    <div className="bg-gray-200 px-4 py-2 flex items-center rounded-full">
-      <button className="text-gray-600">
+    <div className="bg-gray-200 px-4 py-2 flex items-center">
+      {/* <button className="text-gray-600">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-6 w-6"
@@ -16,7 +16,7 @@ const ChatInput = () => {
             d="M12 6v6m0 0v6m0-6h6m-6 0H6"
           />
         </svg>
-      </button>
+      </button> */}
       <input
         type="text"
         placeholder="Type a message..."

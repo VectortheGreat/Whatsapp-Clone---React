@@ -6,10 +6,8 @@ type ContainerProps = {
 
 const Container: React.FC<ContainerProps> = ({ children }) => {
   return (
-    <div className="container">
-      <div className="flex justify-center">
-        <div className="w-10/12 mt-3">{children}</div>
-      </div>
+    <div className="flex justify-center">
+      <div className="w-11/12 mt-3">{children}</div>
     </div>
   );
 };

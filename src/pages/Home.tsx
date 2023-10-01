@@ -1,5 +1,5 @@
 import LeftHeader from "../components/Left Bar/LeftHeader";
-import MessageCard from "../components/Left Bar/Messages/MessageCard";
+import Messages from "../components/Left Bar/Messages/Messages";
 import SearchInput from "../components/Left Bar/SearchInput";
 import Chat from "../components/Right Bar/Chat/Chat";
 import ChatInput from "../components/Right Bar/Chat/ChatInput";
@@ -8,25 +8,20 @@ import RightHeader from "../components/Right Bar/RightHeader";
 const Home = () => {
   return (
     <div>
-      <header className="flex justify-between">
+      <header className="grid grid-cols-12">
         <LeftHeader></LeftHeader>
         <RightHeader></RightHeader>
       </header>
-      <header className="flex justify-between">
-        <div>
+      <section className="grid grid-cols-12">
+        <div className="col-span-4">
           <SearchInput></SearchInput>
-          <MessageCard></MessageCard>
-          <MessageCard></MessageCard>
-          <MessageCard></MessageCard>
-          <MessageCard></MessageCard>
-          <MessageCard></MessageCard>
-          <MessageCard></MessageCard>
+          <Messages></Messages>
         </div>
-        <div>
+        <div className="col-span-8">
           <Chat></Chat>
           <ChatInput></ChatInput>
         </div>
-      </header>
+      </section>
     </div>
   );
 };
