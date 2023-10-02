@@ -1,5 +1,5 @@
 import LeftHeader from "../components/Left Bar/LeftHeader";
-import Messages from "../components/Left Bar/Messages/Messages";
+import Messages from "../components/Left Bar/Messages/MessageInbox";
 import SearchInput from "../components/Left Bar/SearchInput";
 import Chat from "../components/Right Bar/Chat/Chat";
 import ChatInput from "../components/Right Bar/Chat/ChatInput";
