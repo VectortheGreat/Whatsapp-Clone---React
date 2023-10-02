@@ -1,19 +1,32 @@
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import { BiSolidSend } from "react-icons/bi";
 import { useDispatch } from "react-redux";
 import { newMessage } from "../../../redux/messageSlice";
 
 const ChatInput = () => {
   const [inputMessage, setInputMessage] = useState<string>("");
+  // const [inputMessageDate, setInputMessageDate] = useState<number|string>();
   const dispatch = useDispatch();
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const onChangeInput = (e: ChangeEvent<HTMLInputElement>) => {
     setInputMessage(e.target.value);
   };
 
+  const onKeyPressInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      onClickInput();
+    }
+  };
+
   const onClickInput = () => {
-    console.log("Değer: ", inputMessage);
-    dispatch(newMessage(inputMessage));
+    if (inputMessage.trim() !== "") {
+      dispatch(newMessage(inputMessage));
+      setInputMessage("");
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
+    }
   };
 
   return (
@@ -39,6 +52,8 @@ const ChatInput = () => {
         placeholder="Type a message..."
         className="bg-transparent outline-none p-2 flex-grow"
         onChange={(e) => onChangeInput(e)}
+        ref={inputRef}
+        onKeyPress={(e) => onKeyPressInput(e)}
       />
       <BiSolidSend
         size={24}

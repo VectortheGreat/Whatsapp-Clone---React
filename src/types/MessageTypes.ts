@@ -1,3 +1,4 @@
 export type MessageState = {
-    message: string[];
-}
+  messages: string[];
+  dates: string[];
+};
