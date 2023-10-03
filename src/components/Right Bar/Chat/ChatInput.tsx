@@ -5,7 +5,6 @@ import { newMessage } from "../../../redux/messageSlice";
 
 const ChatInput = () => {
   const [inputMessage, setInputMessage] = useState<string>("");
-  // const [inputMessageDate, setInputMessageDate] = useState<number|string>();
   const dispatch = useDispatch();
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -21,7 +20,21 @@ const ChatInput = () => {
 
   const onClickInput = () => {
     if (inputMessage.trim() !== "") {
-      dispatch(newMessage(inputMessage));
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString();
+      const currentHour = currentDate.getHours();
+      const currentMinute = currentDate.getMinutes();
+      // const formattedHour =currentDate.getHours() + ":" + currentDate.getMinutes();
+      const formattedHour =
+        currentHour.toString().padStart(2, "0") +
+        ":" +
+        currentMinute.toString().padStart(2, "0");
+      const messageData = {
+        content: inputMessage,
+        date: formattedDate,
+        hour: formattedHour,
+      };
+      dispatch(newMessage(messageData));
       setInputMessage("");
       if (inputRef.current) {
         inputRef.current.value = "";

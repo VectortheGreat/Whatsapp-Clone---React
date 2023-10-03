@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { MessageState } from "../types/MessageTypes";
+import { Message, MessageData } from "../types/MessageTypes";
 
-const initialState: MessageState = {
+const initialState: MessageData = {
   messages: [],
 };
 
@@ -10,8 +10,13 @@ const messageSlice = createSlice({
   initialState,
   reducers: {
     newMessage: (state, action) => {
-      state.messages = [...state.messages, action.payload];
-      console.log(state.messages);
+      const newMessage: Message = {
+        id: state.messages.length + 1, // Mesaj ID'sini otomatik olarak artırabilirsiniz.
+        content: action.payload.content,
+        date: action.payload.date,
+        hour: action.payload.hour,
+      };
+      state.messages.push(newMessage);
     },
   },
 });
