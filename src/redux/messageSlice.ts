@@ -3,19 +3,15 @@ import { MessageState } from "../types/MessageTypes";
 
 const initialState: MessageState = {
   messages: [],
-  dates: [],
 };
 
 const messageSlice = createSlice({
-  name: "messages",
+  name: "message",
   initialState,
   reducers: {
     newMessage: (state, action) => {
       state.messages = [...state.messages, action.payload];
-      console.log(state.messages)
-    },
-    newMessageDate: (state, action) => {
-      state.dates = [...state.dates, action.payload];
+      console.log(state.messages);
     },
   },
 });
