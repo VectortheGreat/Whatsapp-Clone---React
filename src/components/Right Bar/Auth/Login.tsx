@@ -1,16 +1,14 @@
-// import { initializeApp } from "firebase/app";
-// import { config } from "../../../config/config";
-// import { getAuth } from "firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth/cordova";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { authInfo, loginModeToggle, tokenInfo } from "../../../redux/userSlice";
+import { authFBConfig } from "../../../config/config";
 
-const Login = ({ auth }) => {
-  //   const app = initializeApp(config.firebaseConfig);
-  //   const auth = getAuth(app);
-
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  console.log("email: ", email, " password: ", password);
+  const dispatch = useDispatch();
+  const auth = authFBConfig;
 
   const handleLogin = async () => {
     try {
@@ -21,8 +19,16 @@ const Login = ({ auth }) => {
       );
       const user = userCredential.user;
       console.log("Logged in as:", user.email);
+      const token = "random-token-name";
+      const userPayload = {
+        uid: user.uid,
+        email: user.email,
+      };
+      dispatch(tokenInfo(token));
+      dispatch(loginModeToggle());
+      dispatch(authInfo(userPayload));
     } catch (error) {
-      console.error("Authentication failed:", error.message);
+      console.error("Authentication failed:", error);
     }
   };
 

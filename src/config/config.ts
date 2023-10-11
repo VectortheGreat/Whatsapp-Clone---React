@@ -1,4 +1,7 @@
-export const config = {
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+
+const config = {
   firebaseConfig: {
     apiKey: "AIzaSyDU6Cj77ond7P7Qw2HhpxLYhaiUxdIV4T0",
     authDomain: "whatsapp-clone-20e0a.firebaseapp.com",
@@ -9,3 +12,7 @@ export const config = {
     measurementId: "G-ZCV1M1CZ82",
   },
 };
+
+const appFBConfig = initializeApp(config.firebaseConfig);
+export const authFBConfig = getAuth(appFBConfig);
+export default appFBConfig;

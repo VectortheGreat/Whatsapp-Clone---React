@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LeftHeader from "../components/Left Bar/LeftHeader";
 import Messages from "../components/Left Bar/Messages/MessageInbox";
 import SearchInput from "../components/Left Bar/SearchInput";
@@ -8,16 +8,33 @@ import NoChat from "../components/Right Bar/Chat/NoChat";
 import RightHeader from "../components/Right Bar/RightHeader";
 import Users from "../components/Left Bar/Users/Users";
 import Login from "../components/Right Bar/Auth/Login";
-import { initializeApp } from "firebase/app";
-import { config } from "../config/config";
-import { getAuth } from "firebase/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { authInfo } from "../redux/userSlice";
+import { loginModeStateSelector, tokenStateSelector } from "../types/AuthTypes";
+import { authFBConfig } from "../config/config";
 
 const Home = () => {
-  const [chatMode, setchatMode] = useState<boolean>(false);
-  const [loginMode, setloginMode] = useState<boolean>(true);
+  const dispatch = useDispatch();
+  const [chatMode] = useState<boolean>(false);
+  const loginMode = useSelector(
+    (state: loginModeStateSelector) => state.userStore.loginMode
+  );
+  const token = useSelector(
+    (state: tokenStateSelector) => state.userStore.token
+  );
+  const auth = authFBConfig;
 
-  const app = initializeApp(config.firebaseConfig);
-  const auth = getAuth(app);
+  const authInfoPayload = {
+    app: {
+      name: auth.app.name,
+    },
+    // currentUser: auth.currentUser,
+  };
+  useEffect(() => {
+    // Move the dispatch call to a useEffect
+    dispatch(authInfo(authInfoPayload));
+  }, []);
+
   return (
     <div>
       <header className="grid grid-cols-12">
@@ -37,7 +54,7 @@ const Home = () => {
         </div>
         <div className="col-span-8">
           {loginMode ? (
-            <Login auth={auth}></Login>
+            <Login auth={auth} loginMode={loginMode} token={token}></Login>
           ) : chatMode ? (
             <>
               <Chat></Chat>

@@ -11,7 +11,7 @@ const messageSlice = createSlice({
   reducers: {
     newMessage: (state, action) => {
       const newMessage: Message = {
-        id: state.messages.length + 1, // Mesaj ID'sini otomatik olarak artırabilirsiniz.
+        id: state.messages.length + 1,
         content: action.payload.content,
         date: action.payload.date,
         hour: action.payload.hour,

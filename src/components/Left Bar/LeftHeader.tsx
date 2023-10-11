@@ -1,6 +1,33 @@
+import { signOut } from "firebase/auth";
 import { BsChatRightDots } from "react-icons/bs";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { useDispatch, useSelector } from "react-redux";
+import { loginModeToggle, tokenInfo } from "../../redux/userSlice";
+import { tokenStateSelector } from "../../types/AuthTypes";
+import { authFBConfig } from "../../config/config";
 const LeftHeader = () => {
+  const auth = authFBConfig;
+  const token = useSelector(
+    (state: tokenStateSelector) => state.userStore.token
+  );
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    if (token) {
+      signOut(auth)
+        .then(() => {
+          console.log("Signed out successfully");
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      dispatch(tokenInfo(""));
+      dispatch(loginModeToggle());
+      console.log(token);
+    } else {
+      console.error("User is not authenticated. Cannot sign out.");
+    }
+  };
+
   return (
     <div className="col-span-4 p-2">
       <div className="flex justify-between items-center px-2">
@@ -18,6 +45,7 @@ const LeftHeader = () => {
             className="cursor-pointer"
             size={24}
           ></BsThreeDotsVertical>
+          <button onClick={handleLogout}>Sign Out</button>
         </div>
       </div>
     </div>
