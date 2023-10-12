@@ -4,11 +4,17 @@ export type userSliceType = {
   auth: any;
   token: string;
   loginMode: boolean;
+  toggleLoginOrSignup: boolean;
 };
 
 export type loginModeStateSelector = {
   userStore: {
     loginMode: boolean;
+  };
+};
+export type toggleLoginOrSignupStateSelector = {
+  userStore: {
+    toggleLoginOrSignup: boolean;
   };
 };
 

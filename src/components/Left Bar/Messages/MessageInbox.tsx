@@ -1,7 +1,6 @@
-import MessageCard from "./MessageCard"; // MessageCard bileşenini ekleyin
+import MessageCard from "./MessageCard";
 
-const Messages = () => {
-  // Örnek mesajlar için veri oluşturun (bunu gerektiğiniz gibi güncelleyin)
+const MessageInbox = () => {
   const messages = [
     {
       id: 1,
@@ -32,4 +31,4 @@ const Messages = () => {
   );
 };
 
-export default Messages;
+export default MessageInbox;

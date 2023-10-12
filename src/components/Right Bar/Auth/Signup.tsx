@@ -1,50 +1,44 @@
-import { signInWithEmailAndPassword } from "firebase/auth/cordova";
-import { useState } from "react";
 import { useDispatch } from "react-redux";
-import {
-  authInfo,
-  loginModeToggle,
-  toggleLoginOrSignupReducer,
-  tokenInfo,
-} from "../../../redux/userSlice";
+import { toggleLoginOrSignupReducer } from "../../../redux/userSlice";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { authFBConfig } from "../../../config/config";
+import { useState } from "react";
+import validator from "validator";
 import { toast } from "react-toastify";
 
-const Login = () => {
+const Signup = () => {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const dispatch = useDispatch();
   const auth = authFBConfig;
 
-  const handleLogin = async () => {
+  const handleSignup = async () => {
     try {
-      toast.info("Loading...", {
-        hideProgressBar: true,
-      });
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
-      // const tokenExpirationTime =auth.currentUser.stsTokenManager.expirationTime;
-      // console.log(tokenExpirationTime);
-      const idToken = await auth.currentUser?.getIdToken();
-      const userPayload = {
-        uid: user.uid,
-        email: user.email,
-      };
-      dispatch(tokenInfo(idToken));
-      dispatch(loginModeToggle());
-      dispatch(authInfo(userPayload));
+      const isEmailValid = validator.isEmail(email);
+      if (!isEmailValid) {
+        console.error("Invalid E-mail");
+        toast.error("Invalid E-mail");
+      } else {
+        toast.info("Loading...", {
+          hideProgressBar: true,
+        });
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const user = userCredential.user;
+        console.log("Signed up:", user);
+        dispatch(toggleLoginOrSignupReducer());
+      }
     } catch (error) {
       console.error("Authentication failed:", error);
+      toast.error("Authentication failed: " + error);
     }
   };
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-black">
-      <h1>Login</h1>
+      <h1>Sign Up</h1>
       <div className="mb-4">
         <label htmlFor="email" className="block text-gray-600">
           E-mail:
@@ -71,20 +65,20 @@ const Login = () => {
       </div>
       <div>
         <button
-          className="w-full bg-rose-800 text-white py-2 rounded-lg hover:bg-rose-950 transition duration-300 mb-4"
-          onClick={handleLogin}
+          className="w-full bg-rose-800 text-white py-2 rounded-lg hover-bg-rose-950 transition duration-300 mb-4"
+          onClick={handleSignup}
         >
-          Login
+          Sign Up
         </button>
         <button
           className="w-full bg-slate-500 text-white py-2 rounded-lg hover:bg-slate-800 transition duration-300 mb-4"
           onClick={() => dispatch(toggleLoginOrSignupReducer())}
         >
-          Don't you have an Account?
+          Do you have an Account?
         </button>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default Signup;

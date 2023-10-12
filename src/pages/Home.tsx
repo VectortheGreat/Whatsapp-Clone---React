@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import LeftHeader from "../components/Left Bar/LeftHeader";
-import Messages from "../components/Left Bar/Messages/MessageInbox";
+import MessageInbox from "../components/Left Bar/Messages/MessageInbox";
 import SearchInput from "../components/Left Bar/SearchInput";
 import Chat from "../components/Right Bar/Chat/Chat";
 import ChatInput from "../components/Right Bar/Chat/ChatInput";
@@ -10,14 +10,23 @@ import Users from "../components/Left Bar/Users/Users";
 import Login from "../components/Right Bar/Auth/Login";
 import { useDispatch, useSelector } from "react-redux";
 import { authInfo } from "../redux/userSlice";
-import { loginModeStateSelector, tokenStateSelector } from "../types/AuthTypes";
+import {
+  loginModeStateSelector,
+  toggleLoginOrSignupStateSelector,
+  tokenStateSelector,
+} from "../types/UserTypes";
 import { authFBConfig } from "../config/config";
+import Signup from "../components/Right Bar/Auth/Signup";
 
 const Home = () => {
   const dispatch = useDispatch();
-  const [chatMode] = useState<boolean>(false);
+  const [chatMode, setChatMode] = useState<boolean>(true);
   const loginMode = useSelector(
     (state: loginModeStateSelector) => state.userStore.loginMode
+  );
+  const toggleLoginOrSignup = useSelector(
+    (state: toggleLoginOrSignupStateSelector) =>
+      state.userStore.toggleLoginOrSignup
   );
   const token = useSelector(
     (state: tokenStateSelector) => state.userStore.token
@@ -28,25 +37,25 @@ const Home = () => {
     app: {
       name: auth.app.name,
     },
-    // currentUser: auth.currentUser,
+    currentUser: auth.currentUser,
   };
   useEffect(() => {
-    // Move the dispatch call to a useEffect
     dispatch(authInfo(authInfoPayload));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div>
       <header className="grid grid-cols-12">
-        <LeftHeader></LeftHeader>
-        {chatMode && <RightHeader></RightHeader>}
+        <LeftHeader setChatMode={setChatMode}></LeftHeader>
+        {chatMode && token && <RightHeader></RightHeader>}
       </header>
       <section className="grid grid-cols-12">
         <div className="col-span-4">
           <SearchInput></SearchInput>
           {chatMode ? (
             <>
-              <Messages></Messages>
+              <MessageInbox></MessageInbox>
             </>
           ) : (
             <Users></Users>
@@ -54,7 +63,11 @@ const Home = () => {
         </div>
         <div className="col-span-8">
           {loginMode ? (
-            <Login auth={auth} loginMode={loginMode} token={token}></Login>
+            toggleLoginOrSignup ? (
+              <Login auth={auth} loginMode={loginMode} token={token}></Login>
+            ) : (
+              <Signup></Signup>
+            )
           ) : chatMode ? (
             <>
               <Chat></Chat>

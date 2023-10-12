@@ -3,9 +3,13 @@ import { BsChatRightDots } from "react-icons/bs";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { loginModeToggle, tokenInfo } from "../../redux/userSlice";
-import { tokenStateSelector } from "../../types/AuthTypes";
+import { tokenStateSelector } from "../../types/UserTypes";
 import { authFBConfig } from "../../config/config";
-const LeftHeader = () => {
+
+type LeftHeaderProps = {
+  setChatMode: (chatMode: boolean) => void;
+};
+const LeftHeader: React.FC<LeftHeaderProps> = ({ setChatMode }) => {
   const auth = authFBConfig;
   const token = useSelector(
     (state: tokenStateSelector) => state.userStore.token
@@ -22,7 +26,6 @@ const LeftHeader = () => {
         });
       dispatch(tokenInfo(""));
       dispatch(loginModeToggle());
-      console.log(token);
     } else {
       console.error("User is not authenticated. Cannot sign out.");
     }
@@ -30,24 +33,31 @@ const LeftHeader = () => {
 
   return (
     <div className="col-span-4 p-2">
-      <div className="flex justify-between items-center px-2">
-        <img
-          src="https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
-          alt=""
-          className="w-12 h-12 object-cover rounded-full"
-        />
-        <div className="flex space-x-4">
-          <BsChatRightDots
-            size={24}
-            className="cursor-pointer"
-          ></BsChatRightDots>
-          <BsThreeDotsVertical
-            className="cursor-pointer"
-            size={24}
-          ></BsThreeDotsVertical>
-          <button onClick={handleLogout}>Sign Out</button>
+      {token ? (
+        <div className="flex justify-between items-center px-2">
+          <img
+            src="https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
+            alt=""
+            className="w-12 h-12 object-cover rounded-full"
+          />
+          <div className="flex space-x-4">
+            <BsChatRightDots
+              size={24}
+              className="cursor-pointer"
+              onClick={() => setChatMode((prevChatMode) => !prevChatMode)}
+            ></BsChatRightDots>
+            <BsThreeDotsVertical
+              className="cursor-pointer"
+              size={24}
+            ></BsThreeDotsVertical>
+            <button onClick={handleLogout}>Sign Out</button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex justify-center py-2">
+          <h1>Whatsapp Clone</h1>
+        </div>
+      )}
     </div>
   );
 };
