@@ -19,9 +19,9 @@ const Signup = () => {
         console.error("Invalid E-mail");
         toast.error("Invalid E-mail");
       } else {
-        toast.info("Loading...", {
-          hideProgressBar: true,
-        });
+        // toast.info("Loading...", {
+        //   hideProgressBar: true,
+        // });
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           email,

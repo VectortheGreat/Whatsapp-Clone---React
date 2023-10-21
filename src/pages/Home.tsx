@@ -28,22 +28,26 @@ const Home = () => {
     (state: toggleLoginOrSignupStateSelector) =>
       state.userStore.toggleLoginOrSignup
   );
-  const token = useSelector(
-    (state: tokenStateSelector) => state.userStore.token
-  );
-  const auth = authFBConfig;
 
+  const auth = authFBConfig;
   const authInfoPayload = {
     app: {
       name: auth.app.name,
     },
     currentUser: auth.currentUser,
   };
+
   useEffect(() => {
     dispatch(authInfo(authInfoPayload));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const token = useSelector(
+    (state: tokenStateSelector) => state.userStore.token
+  );
+  useEffect(() => {
+    // console.log("Local Storage: ", localStorage.getItem("user"));
+  }, [token]);
   return (
     <div>
       <header className="grid grid-cols-12">
@@ -53,7 +57,7 @@ const Home = () => {
       <section className="grid grid-cols-12">
         <div className="col-span-4">
           <SearchInput></SearchInput>
-          {chatMode ? (
+          {chatMode && token ? (
             <>
               <MessageInbox></MessageInbox>
             </>
@@ -62,7 +66,7 @@ const Home = () => {
           )}
         </div>
         <div className="col-span-8">
-          {loginMode ? (
+          {loginMode && !token ? (
             toggleLoginOrSignup ? (
               <Login auth={auth} loginMode={loginMode} token={token}></Login>
             ) : (

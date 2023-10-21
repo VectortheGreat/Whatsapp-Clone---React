@@ -4,7 +4,7 @@ import { userSliceType } from "../types/UserTypes";
 const initialState: userSliceType = {
   users: [],
   auth: "",
-  token: "",
+  token: localStorage.getItem("user") || "",
   loginMode: true,
   toggleLoginOrSignup: true,
 };
@@ -15,10 +15,12 @@ const userSlice = createSlice({
   reducers: {
     authInfo: (state, action) => {
       state.auth = action.payload;
-      console.log(state.auth);
     },
     tokenInfo: (state, action) => {
-      state.token = action.payload;
+      state.token = action.payload; //eski
+      const user = JSON.parse(action.payload);
+      state.token = user;
+      localStorage.setItem("user", JSON.stringify(action.payload));
       console.log(state.token);
     },
     loginModeToggle: (state) => {

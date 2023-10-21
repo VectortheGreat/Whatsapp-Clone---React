@@ -27,14 +27,18 @@ const Login = () => {
         password
       );
       const user = userCredential.user;
-      // const tokenExpirationTime =auth.currentUser.stsTokenManager.expirationTime;
-      // console.log(tokenExpirationTime);
-      const idToken = await auth.currentUser?.getIdToken();
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          // dispatch(tokenInfo(JSON.stringify(user))); //eski
+          dispatch(tokenInfo(user));
+        } else {
+          localStorage.removeItem("user");
+        }
+      });
       const userPayload = {
         uid: user.uid,
         email: user.email,
       };
-      dispatch(tokenInfo(idToken));
       dispatch(loginModeToggle());
       dispatch(authInfo(userPayload));
     } catch (error) {

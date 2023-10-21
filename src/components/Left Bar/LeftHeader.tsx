@@ -3,17 +3,17 @@ import { BsChatRightDots } from "react-icons/bs";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { loginModeToggle, tokenInfo } from "../../redux/userSlice";
-import { tokenStateSelector } from "../../types/UserTypes";
 import { authFBConfig } from "../../config/config";
+import { tokenStateSelector } from "../../types/UserTypes";
 
 type LeftHeaderProps = {
   setChatMode: (chatMode: boolean) => void;
 };
 const LeftHeader: React.FC<LeftHeaderProps> = ({ setChatMode }) => {
-  const auth = authFBConfig;
   const token = useSelector(
     (state: tokenStateSelector) => state.userStore.token
   );
+  const auth = authFBConfig;
   const dispatch = useDispatch();
   const handleLogout = () => {
     if (token) {
@@ -26,6 +26,11 @@ const LeftHeader: React.FC<LeftHeaderProps> = ({ setChatMode }) => {
         });
       dispatch(tokenInfo(""));
       dispatch(loginModeToggle());
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          localStorage.removeItem("user");
+        }
+      });
     } else {
       console.error("User is not authenticated. Cannot sign out.");
     }
