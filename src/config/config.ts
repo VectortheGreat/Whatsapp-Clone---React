@@ -3,13 +3,13 @@ import { getAuth } from "firebase/auth";
 
 const config = {
   firebaseConfig: {
-    apiKey: "AIzaSyDU6Cj77ond7P7Qw2HhpxLYhaiUxdIV4T0",
-    authDomain: "whatsapp-clone-20e0a.firebaseapp.com",
-    projectId: "whatsapp-clone-20e0a",
-    storageBucket: "whatsapp-clone-20e0a.appspot.com",
-    messagingSenderId: "633814386791",
-    appId: "1:633814386791:web:554dd5115de1e846bb6cc2",
-    measurementId: "G-ZCV1M1CZ82",
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
   },
 };
 

@@ -7,12 +7,13 @@ import { authFBConfig } from "../../config/config";
 import { tokenStateSelector } from "../../types/UserTypes";
 
 type LeftHeaderProps = {
-  setChatMode: (chatMode: boolean) => void;
+  setToggleMessageUserBar: (chatMode: boolean) => void;
 };
-const LeftHeader: React.FC<LeftHeaderProps> = ({ setChatMode }) => {
+const LeftHeader: React.FC<LeftHeaderProps> = ({ setToggleMessageUserBar }) => {
   const token = useSelector(
     (state: tokenStateSelector) => state.userStore.token
   );
+
   const auth = authFBConfig;
   const dispatch = useDispatch();
   const handleLogout = () => {
@@ -49,7 +50,11 @@ const LeftHeader: React.FC<LeftHeaderProps> = ({ setChatMode }) => {
             <BsChatRightDots
               size={24}
               className="cursor-pointer"
-              onClick={() => setChatMode((prevChatMode) => !prevChatMode)}
+              onClick={() =>
+                setToggleMessageUserBar(
+                  (prevToggleMessageUserBar) => !prevToggleMessageUserBar
+                )
+              }
             ></BsChatRightDots>
             <BsThreeDotsVertical
               className="cursor-pointer"

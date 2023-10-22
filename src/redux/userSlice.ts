@@ -17,11 +17,13 @@ const userSlice = createSlice({
       state.auth = action.payload;
     },
     tokenInfo: (state, action) => {
-      state.token = action.payload; //eski
-      const user = JSON.parse(action.payload);
-      state.token = user;
-      localStorage.setItem("user", JSON.stringify(action.payload));
-      console.log(state.token);
+      if (localStorage.getItem("user")) {
+        state.token = "";
+      } else {
+        const user = JSON.parse(action.payload);
+        state.token = user;
+        localStorage.setItem("user", JSON.stringify(action.payload));
+      }
     },
     loginModeToggle: (state) => {
       state.loginMode = !state.loginMode;

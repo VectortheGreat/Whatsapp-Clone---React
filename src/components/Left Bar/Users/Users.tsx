@@ -17,6 +17,7 @@ const Users = () => {
       time: "1:15 PM",
     },
   ];
+
   return (
     <div>
       <div className="border-r border-gray-300">

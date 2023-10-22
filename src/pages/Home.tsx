@@ -17,16 +17,21 @@ import {
 } from "../types/UserTypes";
 import { authFBConfig } from "../config/config";
 import Signup from "../components/Right Bar/Auth/Signup";
+import { openChatStateSelector } from "../types/MessageTypes";
 
 const Home = () => {
   const dispatch = useDispatch();
-  const [chatMode, setChatMode] = useState<boolean>(true);
+  const [toggleMessageUserBar, setToggleMessageUserBar] =
+    useState<boolean>(false);
   const loginMode = useSelector(
     (state: loginModeStateSelector) => state.userStore.loginMode
   );
   const toggleLoginOrSignup = useSelector(
     (state: toggleLoginOrSignupStateSelector) =>
       state.userStore.toggleLoginOrSignup
+  );
+  const openChatMode = useSelector(
+    (state: openChatStateSelector) => state.messageStore.chatMode
   );
 
   const auth = authFBConfig;
@@ -45,19 +50,20 @@ const Home = () => {
   const token = useSelector(
     (state: tokenStateSelector) => state.userStore.token
   );
-  useEffect(() => {
-    // console.log("Local Storage: ", localStorage.getItem("user"));
-  }, [token]);
+  useEffect(() => {}, [token]);
+
   return (
     <div>
       <header className="grid grid-cols-12">
-        <LeftHeader setChatMode={setChatMode}></LeftHeader>
-        {chatMode && token && <RightHeader></RightHeader>}
+        <LeftHeader
+          setToggleMessageUserBar={setToggleMessageUserBar}
+        ></LeftHeader>
+        {openChatMode && token && <RightHeader></RightHeader>}
       </header>
       <section className="grid grid-cols-12">
         <div className="col-span-4">
           <SearchInput></SearchInput>
-          {chatMode && token ? (
+          {toggleMessageUserBar && token ? (
             <>
               <MessageInbox></MessageInbox>
             </>
@@ -72,7 +78,7 @@ const Home = () => {
             ) : (
               <Signup></Signup>
             )
-          ) : chatMode ? (
+          ) : openChatMode ? (
             <>
               <Chat></Chat>
               <ChatInput></ChatInput>

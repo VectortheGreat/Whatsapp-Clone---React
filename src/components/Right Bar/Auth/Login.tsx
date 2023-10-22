@@ -29,8 +29,7 @@ const Login = () => {
       const user = userCredential.user;
       auth.onAuthStateChanged((user) => {
         if (user) {
-          // dispatch(tokenInfo(JSON.stringify(user))); //eski
-          dispatch(tokenInfo(user));
+          dispatch(tokenInfo(JSON.stringify(user)));
         } else {
           localStorage.removeItem("user");
         }
