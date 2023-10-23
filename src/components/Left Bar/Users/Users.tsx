@@ -1,29 +1,21 @@
 import UserCard from "./UserCard";
+type User = {
+  uid: string;
+  name: string;
+  photo: string;
+};
 
-const Users = () => {
-  const users = [
-    {
-      id: "user-1",
-      avatar: "URL_TO_AVATAR_IMAGE_1",
-      name: "John Doe",
-      message: "Hello, how are you?",
-      time: "12:30 PM",
-    },
-    {
-      id: "user-2",
-      avatar: "URL_TO_AVATAR_IMAGE_2",
-      name: "Jane Smith",
-      message: "I'm good, thanks!",
-      time: "1:15 PM",
-    },
-  ];
-
+type UsersProps = {
+  users: User[];
+};
+const Users: React.FC<UsersProps> = ({ users }) => {
   return (
     <div>
       <div className="border-r border-gray-300">
         <div className="overflow-y-auto h-[calc(100vh-136px)]">
+          <h1 className="text-center text-xl">User List</h1>
           {users.map((user) => (
-            <UserCard key={user.id} name={user.name} />
+            <UserCard key={user.uid} name={user.name} photo={user.photo} />
           ))}
         </div>
       </div>

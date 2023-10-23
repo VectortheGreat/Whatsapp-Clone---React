@@ -1,7 +1,12 @@
 import { useDispatch } from "react-redux";
 import { openChat } from "../../../redux/messageSlice";
 
-const UserCard = ({ name }) => {
+type UserCardProps = {
+  name: string;
+  photo: string;
+};
+
+const UserCard: React.FC<UserCardProps> = ({ name, photo }) => {
   const dispatch = useDispatch();
   return (
     <div>
@@ -10,11 +15,7 @@ const UserCard = ({ name }) => {
         onClick={() => dispatch(openChat())}
       >
         <div className="w-12 h-12 rounded-full overflow-hidden">
-          <img
-            src="https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
-            alt=""
-            className="w-full h-full object-cover"
-          />
+          <img src={photo} alt="" className="w-full h-full object-cover" />
         </div>
         <div className="ml-3">
           <p className="text-sm font-semibold">{name}</p>

@@ -4,7 +4,10 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { loginModeToggle, tokenInfo } from "../../redux/userSlice";
 import { authFBConfig } from "../../config/config";
-import { tokenStateSelector } from "../../types/UserTypes";
+import {
+  loggedUserStateSelector,
+  tokenStateSelector,
+} from "../../types/UserTypes";
 
 type LeftHeaderProps = {
   setToggleMessageUserBar: (chatMode: boolean) => void;
@@ -14,6 +17,10 @@ const LeftHeader: React.FC<LeftHeaderProps> = ({ setToggleMessageUserBar }) => {
     (state: tokenStateSelector) => state.userStore.token
   );
 
+  const loggedUser = useSelector(
+    (state: loggedUserStateSelector) => state.userStore.loggedUser
+  );
+  console.log(loggedUser); //TODO Parse yapılacak
   const auth = authFBConfig;
   const dispatch = useDispatch();
   const handleLogout = () => {
@@ -42,7 +49,8 @@ const LeftHeader: React.FC<LeftHeaderProps> = ({ setToggleMessageUserBar }) => {
       {token ? (
         <div className="flex justify-between items-center px-2">
           <img
-            src="https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
+            src={loggedUser.photoURL}
+            // src="https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
             alt=""
             className="w-12 h-12 object-cover rounded-full"
           />

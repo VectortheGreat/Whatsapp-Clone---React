@@ -9,15 +9,17 @@ import RightHeader from "../components/Right Bar/RightHeader";
 import Users from "../components/Left Bar/Users/Users";
 import Login from "../components/Right Bar/Auth/Login";
 import { useDispatch, useSelector } from "react-redux";
-import { authInfo } from "../redux/userSlice";
+import { authInfo, fetchUsersFromDB } from "../redux/userSlice";
 import {
   loginModeStateSelector,
   toggleLoginOrSignupStateSelector,
   tokenStateSelector,
+  usersStateSelector,
 } from "../types/UserTypes";
-import { authFBConfig } from "../config/config";
+import { authFBConfig, database } from "../config/config";
 import Signup from "../components/Right Bar/Auth/Signup";
 import { openChatStateSelector } from "../types/MessageTypes";
+import { get, ref } from "firebase/database";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -52,6 +54,30 @@ const Home = () => {
   );
   useEffect(() => {}, [token]);
 
+  const users = useSelector(
+    (state: usersStateSelector) => state.userStore.users
+  );
+  const getUsers = async () => {
+    const usersRef = ref(database, "users");
+    get(usersRef)
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const usersData = snapshot.val();
+          const usersArray = Object.values(usersData);
+          dispatch(fetchUsersFromDB(usersArray));
+        } else {
+          console.log("Kullanıcı verileri bulunamadı.");
+        }
+      })
+      .catch((error) => {
+        console.error("Veri çekme hatası:", error);
+      });
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
+
   return (
     <div>
       <header className="grid grid-cols-12">
@@ -67,8 +93,10 @@ const Home = () => {
             <>
               <MessageInbox></MessageInbox>
             </>
+          ) : token ? (
+            <Users users={users}></Users>
           ) : (
-            <Users></Users>
+            <span></span>
           )}
         </div>
         <div className="col-span-8">

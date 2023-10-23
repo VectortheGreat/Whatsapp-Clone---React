@@ -5,6 +5,7 @@ export type userSliceType = {
   token: string;
   loginMode: boolean;
   toggleLoginOrSignup: boolean;
+  loggedUser: string;
 };
 
 export type loginModeStateSelector = {
@@ -28,5 +29,16 @@ export type authStateSelector = {
 export type tokenStateSelector = {
   userStore: {
     token: string;
+  };
+};
+
+export type usersStateSelector = {
+  userStore: {
+    users: string[];
+  };
+};
+export type loggedUserStateSelector = {
+  userStore: {
+    loggedUser: string;
   };
 };

@@ -3,6 +3,7 @@ import { userSliceType } from "../types/UserTypes";
 
 const initialState: userSliceType = {
   users: [],
+  loggedUser: localStorage.getItem("user") || "",
   auth: "",
   token: localStorage.getItem("user") || "",
   loginMode: true,
@@ -20,9 +21,10 @@ const userSlice = createSlice({
       if (localStorage.getItem("user")) {
         state.token = "";
       } else {
-        const user = JSON.parse(action.payload);
-        state.token = user;
-        localStorage.setItem("user", JSON.stringify(action.payload));
+        localStorage.setItem("user", action.payload);
+        const logedUserParse = localStorage.getItem("user");
+        state.loggedUser = JSON.parse(logedUserParse);
+        console.log(state.loggedUser);
       }
     },
     loginModeToggle: (state) => {
@@ -30,6 +32,10 @@ const userSlice = createSlice({
     },
     toggleLoginOrSignupReducer: (state) => {
       state.toggleLoginOrSignup = !state.toggleLoginOrSignup;
+    },
+    fetchUsersFromDB: (state, action) => {
+      state.users = action.payload;
+      console.log("state.users:", state.users);
     },
   },
 });
@@ -39,6 +45,8 @@ export const {
   tokenInfo,
   loginModeToggle,
   toggleLoginOrSignupReducer,
+  fetchUsersFromDB,
+  loggedUserInfo,
 } = userSlice.actions;
 
 export default userSlice.reducer;
