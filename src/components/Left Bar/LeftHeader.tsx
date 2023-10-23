@@ -1,5 +1,6 @@
 import { signOut } from "firebase/auth";
 import { BsChatRightDots } from "react-icons/bs";
+import { GoSignOut } from "react-icons/go";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { loginModeToggle, tokenInfo } from "../../redux/userSlice";
@@ -20,7 +21,7 @@ const LeftHeader: React.FC<LeftHeaderProps> = ({ setToggleMessageUserBar }) => {
   const loggedUser = useSelector(
     (state: loggedUserStateSelector) => state.userStore.loggedUser
   );
-  console.log(loggedUser); //TODO Parse yapılacak
+  console.log(loggedUser);
   const auth = authFBConfig;
   const dispatch = useDispatch();
   const handleLogout = () => {
@@ -48,16 +49,18 @@ const LeftHeader: React.FC<LeftHeaderProps> = ({ setToggleMessageUserBar }) => {
     <div className="col-span-4 p-2">
       {token ? (
         <div className="flex justify-between items-center px-2">
-          <img
-            src={loggedUser.photoURL}
-            // src="https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
-            alt=""
-            className="w-12 h-12 object-cover rounded-full"
-          />
+          <div className="flex space-x-5">
+            <img
+              src={loggedUser.photoURL}
+              alt="Profile Picture"
+              className="w-12 h-12 object-cover rounded-full"
+            />
+            <h1 className="mt-1">{loggedUser.displayName as string}</h1>
+          </div>
           <div className="flex space-x-4">
             <BsChatRightDots
               size={24}
-              className="cursor-pointer"
+              className="cursor-pointer hover:text-rose-600"
               onClick={() =>
                 setToggleMessageUserBar(
                   (prevToggleMessageUserBar) => !prevToggleMessageUserBar
@@ -65,10 +68,14 @@ const LeftHeader: React.FC<LeftHeaderProps> = ({ setToggleMessageUserBar }) => {
               }
             ></BsChatRightDots>
             <BsThreeDotsVertical
-              className="cursor-pointer"
+              className="cursor-pointer hover:text-rose-600"
               size={24}
             ></BsThreeDotsVertical>
-            <button onClick={handleLogout}>Sign Out</button>
+            <GoSignOut
+              className="cursor-pointer hover:text-rose-600"
+              size={24}
+              onClick={handleLogout}
+            ></GoSignOut>
           </div>
         </div>
       ) : (

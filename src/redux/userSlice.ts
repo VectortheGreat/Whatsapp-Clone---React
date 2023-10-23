@@ -1,15 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { userSliceType } from "../types/UserTypes";
 
+const storedUser = localStorage.getItem("user");
 const initialState: userSliceType = {
   users: [],
-  loggedUser: localStorage.getItem("user") || "",
+  loggedUser: storedUser ? JSON.parse(storedUser) : null,
   auth: "",
   token: localStorage.getItem("user") || "",
   loginMode: true,
   toggleLoginOrSignup: true,
 };
-
 const userSlice = createSlice({
   name: "user",
   initialState,
@@ -23,7 +23,7 @@ const userSlice = createSlice({
       } else {
         localStorage.setItem("user", action.payload);
         const logedUserParse = localStorage.getItem("user");
-        state.loggedUser = JSON.parse(logedUserParse);
+        state.loggedUser = JSON.parse(logedUserParse!);
         console.log(state.loggedUser);
       }
     },

@@ -11,7 +11,7 @@ const UserCard: React.FC<UserCardProps> = ({ name, photo }) => {
   return (
     <div>
       <div
-        className="flex p-3 border-b border-gray-300 hover:bg-gray-100 cursor-pointer"
+        className="flex p-3 border-b border-gray-300 hover:bg-gray-100 hover:text-black cursor-pointer"
         onClick={() => dispatch(openChat())}
       >
         <div className="w-12 h-12 rounded-full overflow-hidden">

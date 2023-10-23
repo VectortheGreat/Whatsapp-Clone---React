@@ -1,13 +1,88 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { openChat } from "../../../redux/messageSlice";
+import {
+  equalTo,
+  get,
+  orderByChild,
+  push,
+  query,
+  ref,
+  set,
+} from "firebase/database";
+import appFBConfig, { database } from "../../../config/config";
+import { loggedUserStateSelector } from "../../../types/UserTypes";
+import "firebase/database";
 
-const MessageCard = () => {
+type MessageCardProps = {
+  id: number;
+};
+
+const MessageCard: React.FC<MessageCardProps> = ({ id }) => {
   const dispatch = useDispatch();
+  const loggedUser = useSelector(
+    (state: loggedUserStateSelector) => state.userStore.loggedUser
+  );
+
+  const openChatComp = async () => {
+    dispatch(openChat());
+    const messageRef = ref(database, "messages");
+    get(messageRef)
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          snapshot.forEach((childSnapshot) => {
+            const message = childSnapshot.val();
+            if (message.id === `${id}?${loggedUser.uid}`) {
+              console.warn(true);
+            } else {
+              console.error(false);
+            }
+            console.log("Mesaj:", message.id);
+          });
+        } else {
+          console.log("Mesaj verileri bulunamadı.");
+          const messagesRef = push(messageRef);
+          set(messagesRef, {
+            id: `${id}?${loggedUser.uid}`,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Veri çekme hatası:", error);
+      });
+
+    // get(messageRef)
+    //   .then((snapshot) => {
+    //     snapshot.forEach((childSnapshot) => {
+    //       const message = childSnapshot.val();
+    //       console.log("Mesaj:", message);
+    //     });
+    //     if (snapshot.exists()) {
+    //       const messageData = snapshot.val();
+    //       const messageArray = Object.values(messageData);
+    //       console.log(messageArray);
+
+    //       const newMessageRef = push(ref(database, `${id}?${loggedUser.uid}`));
+    //       set(newMessageRef, {
+    //         // id: `${id}?${loggedUser.uid}`,
+    //         name: "Test Mesaj",
+    //       });
+    //     } else {
+    //       console.log("Mesaj verileri bulunamadı.");
+    //       // const messagesRef = push(messageRef);
+    //       // set(messagesRef, {
+    //       //   name: "All Messages",
+    //       // });
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.error("Veri çekme hatası:", error);
+    //   });
+  };
   return (
     <div>
       <div
         className="flex p-3 border-b border-gray-300 hover:bg-gray-100 cursor-pointer"
-        onClick={() => dispatch(openChat())}
+        onClick={openChatComp}
       >
         <div className="w-12 h-12 rounded-full overflow-hidden">
           <img

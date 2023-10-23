@@ -5,7 +5,7 @@ export type userSliceType = {
   token: string;
   loginMode: boolean;
   toggleLoginOrSignup: boolean;
-  loggedUser: string;
+  loggedUser: string | null;
 };
 
 export type loginModeStateSelector = {
@@ -39,6 +39,6 @@ export type usersStateSelector = {
 };
 export type loggedUserStateSelector = {
   userStore: {
-    loggedUser: string;
+    loggedUser: string | null;
   };
 };
