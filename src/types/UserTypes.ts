@@ -8,37 +8,16 @@ export type userSliceType = {
   loggedUser: string | null;
 };
 
-export type loginModeStateSelector = {
+export type UserSliceStateSelector = {
   userStore: {
-    loginMode: boolean;
-  };
-};
-export type toggleLoginOrSignupStateSelector = {
-  userStore: {
-    toggleLoginOrSignup: boolean;
-  };
-};
-
-export type authStateSelector = {
-  userStore: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    auth: any;
-  };
-};
-
-export type tokenStateSelector = {
-  userStore: {
-    token: string;
-  };
-};
-
-export type usersStateSelector = {
-  userStore: {
-    users: string[];
-  };
-};
-export type loggedUserStateSelector = {
-  userStore: {
-    loggedUser: string | null;
+    users?: string[];
+    token?: string;
+    toggleLoginOrSignup?: boolean;
+    loginMode?: boolean;
+    loggedUser?: {
+      uid: string;
+      displayName: string;
+      photoURL: string;
+    };
   };
 };

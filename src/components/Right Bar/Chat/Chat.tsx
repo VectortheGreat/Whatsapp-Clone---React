@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import ChatMessage from "./ChatMessage";
-import { MessageStateSelector } from "../../../types/MessageTypes";
+import { MessageSliceStateSelector } from "../../../types/MessageTypes";
 import { useSelector } from "react-redux";
 
 const Chat = () => {
   const messages = useSelector(
-    (state: MessageStateSelector) => state.messageStore.messages || []
+    (state: MessageSliceStateSelector) => state.messageStore.messages || []
   );
   const [messageData, setMessageData] = useState<string[]>(messages);
 

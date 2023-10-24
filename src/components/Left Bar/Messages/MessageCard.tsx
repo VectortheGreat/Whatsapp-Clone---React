@@ -1,83 +1,78 @@
 import { useDispatch, useSelector } from "react-redux";
 import { openChat } from "../../../redux/messageSlice";
-import {
-  equalTo,
-  get,
-  orderByChild,
-  push,
-  query,
-  ref,
-  set,
-} from "firebase/database";
-import appFBConfig, { database } from "../../../config/config";
-import { loggedUserStateSelector } from "../../../types/UserTypes";
+import { get, push, ref, set } from "firebase/database";
+import { database } from "../../../config/config";
+import { UserSliceStateSelector } from "../../../types/UserTypes";
 import "firebase/database";
+import { useState, useEffect } from "react";
 
 type MessageCardProps = {
   id: number;
+  name: string;
 };
 
-const MessageCard: React.FC<MessageCardProps> = ({ id }) => {
+const MessageCard: React.FC<MessageCardProps> = ({ id, name }) => {
   const dispatch = useDispatch();
   const loggedUser = useSelector(
-    (state: loggedUserStateSelector) => state.userStore.loggedUser
+    (state: UserSliceStateSelector) => state.userStore.loggedUser
   );
-
+  const [chatID, setChatID] = useState<string>("");
+  console.log(chatID);
   const openChatComp = async () => {
-    dispatch(openChat());
     const messageRef = ref(database, "messages");
     get(messageRef)
       .then((snapshot) => {
         if (snapshot.exists()) {
+          let foundProduct = false;
           snapshot.forEach((childSnapshot) => {
             const message = childSnapshot.val();
-            if (message.id === `${id}?${loggedUser.uid}`) {
-              console.warn(true);
-            } else {
-              console.error(false);
+            // console.log("MESAJ ID: ", message.id);
+            // console.log("Koşul ID: ", `${id}?${loggedUser.uid}`);
+            if (
+              message.id === `${id}?${loggedUser.uid}` ||
+              message.id === `${loggedUser.uid}?${id}`
+            ) {
+              setChatID(message.id);
+              foundProduct = true;
+              dispatch(openChat([message.id, loggedUser]));
             }
-            console.log("Mesaj:", message.id);
           });
+          //* Creates a new collection
+          if (foundProduct === false) {
+            const messagesRef = push(messageRef);
+            set(messagesRef, {
+              id: `${id}?${loggedUser.uid}`,
+              name: `${name} and ${loggedUser.displayName} Chat`,
+              messages: [{}],
+            });
+            console.warn("Created a new Collection");
+          }
         } else {
-          console.log("Mesaj verileri bulunamadı.");
+          console.error("Couldn't Find Messages Collection");
           const messagesRef = push(messageRef);
           set(messagesRef, {
             id: `${id}?${loggedUser.uid}`,
+            name: `${name} and ${loggedUser.displayName} Chat`,
+            messages: [
+              {
+                messageId: 1,
+                content: "Test Mesaj",
+                date: "23.01.2023",
+              },
+            ],
           });
+          console.warn("Created a new Collection");
         }
       })
       .catch((error) => {
         console.error("Veri çekme hatası:", error);
       });
-
-    // get(messageRef)
-    //   .then((snapshot) => {
-    //     snapshot.forEach((childSnapshot) => {
-    //       const message = childSnapshot.val();
-    //       console.log("Mesaj:", message);
-    //     });
-    //     if (snapshot.exists()) {
-    //       const messageData = snapshot.val();
-    //       const messageArray = Object.values(messageData);
-    //       console.log(messageArray);
-
-    //       const newMessageRef = push(ref(database, `${id}?${loggedUser.uid}`));
-    //       set(newMessageRef, {
-    //         // id: `${id}?${loggedUser.uid}`,
-    //         name: "Test Mesaj",
-    //       });
-    //     } else {
-    //       console.log("Mesaj verileri bulunamadı.");
-    //       // const messagesRef = push(messageRef);
-    //       // set(messagesRef, {
-    //       //   name: "All Messages",
-    //       // });
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.error("Veri çekme hatası:", error);
-    //   });
   };
+
+  useEffect(() => {
+    console.log(chatID);
+  }, [chatID]);
+
   return (
     <div>
       <div

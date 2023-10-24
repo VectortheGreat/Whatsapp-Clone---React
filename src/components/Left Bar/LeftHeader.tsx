@@ -5,21 +5,18 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { loginModeToggle, tokenInfo } from "../../redux/userSlice";
 import { authFBConfig } from "../../config/config";
-import {
-  loggedUserStateSelector,
-  tokenStateSelector,
-} from "../../types/UserTypes";
+import { UserSliceStateSelector } from "../../types/UserTypes";
 
 type LeftHeaderProps = {
   setToggleMessageUserBar: (chatMode: boolean) => void;
 };
 const LeftHeader: React.FC<LeftHeaderProps> = ({ setToggleMessageUserBar }) => {
   const token = useSelector(
-    (state: tokenStateSelector) => state.userStore.token
+    (state: UserSliceStateSelector) => state.userStore.token
   );
 
   const loggedUser = useSelector(
-    (state: loggedUserStateSelector) => state.userStore.loggedUser
+    (state: UserSliceStateSelector) => state.userStore.loggedUser
   );
   console.log(loggedUser);
   const auth = authFBConfig;

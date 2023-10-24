@@ -1,6 +1,11 @@
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { GoSearch } from "react-icons/go";
+import { useSelector } from "react-redux";
+import { MessageSliceStateSelector } from "../../types/MessageTypes";
 const RightHeader = () => {
+  const receiver = useSelector(
+    (state: MessageSliceStateSelector) => state.messageStore.receiver
+  );
   return (
     <div className="col-span-8 p-2">
       <div className="flex justify-between items-center">

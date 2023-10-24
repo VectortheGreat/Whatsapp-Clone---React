@@ -10,15 +10,10 @@ import Users from "../components/Left Bar/Users/Users";
 import Login from "../components/Right Bar/Auth/Login";
 import { useDispatch, useSelector } from "react-redux";
 import { authInfo, fetchUsersFromDB } from "../redux/userSlice";
-import {
-  loginModeStateSelector,
-  toggleLoginOrSignupStateSelector,
-  tokenStateSelector,
-  usersStateSelector,
-} from "../types/UserTypes";
+import { UserSliceStateSelector } from "../types/UserTypes";
 import { authFBConfig, database } from "../config/config";
 import Signup from "../components/Right Bar/Auth/Signup";
-import { openChatStateSelector } from "../types/MessageTypes";
+import { MessageSliceStateSelector } from "../types/MessageTypes";
 import { get, ref } from "firebase/database";
 
 const Home = () => {
@@ -26,14 +21,13 @@ const Home = () => {
   const [toggleMessageUserBar, setToggleMessageUserBar] =
     useState<boolean>(false);
   const loginMode = useSelector(
-    (state: loginModeStateSelector) => state.userStore.loginMode
+    (state: UserSliceStateSelector) => state.userStore.loginMode
   );
   const toggleLoginOrSignup = useSelector(
-    (state: toggleLoginOrSignupStateSelector) =>
-      state.userStore.toggleLoginOrSignup
+    (state: UserSliceStateSelector) => state.userStore.toggleLoginOrSignup
   );
   const openChatMode = useSelector(
-    (state: openChatStateSelector) => state.messageStore.chatMode
+    (state: MessageSliceStateSelector) => state.messageStore.chatMode
   );
 
   const auth = authFBConfig;
@@ -50,12 +44,12 @@ const Home = () => {
   }, []);
 
   const token = useSelector(
-    (state: tokenStateSelector) => state.userStore.token
+    (state: UserSliceStateSelector) => state.userStore.token
   );
   useEffect(() => {}, [token]);
 
   const users = useSelector(
-    (state: usersStateSelector) => state.userStore.users
+    (state: UserSliceStateSelector) => state.userStore.users
   );
   const getUsers = async () => {
     const usersRef = ref(database, "users");
@@ -88,7 +82,7 @@ const Home = () => {
       </header>
       <section className="grid grid-cols-12">
         <div className="col-span-4">
-          <SearchInput></SearchInput>
+          {token && <SearchInput></SearchInput>}
           {toggleMessageUserBar && token ? (
             <>
               <MessageInbox></MessageInbox>

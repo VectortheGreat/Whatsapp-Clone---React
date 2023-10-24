@@ -8,16 +8,14 @@ export type Message = {
 export type MessageData = {
   messages: Message[];
   chatMode: boolean;
+  chatID: string;
+  receiver: string;
 };
 
-export type MessageStateSelector = {
+export type MessageSliceStateSelector = {
   messageStore: {
-    messages: string[];
-  };
-};
-
-export type openChatStateSelector = {
-  messageStore: {
-    chatMode: boolean;
+    messages?: string[];
+    chatMode?: boolean;
+    receiver?: string;
   };
 };

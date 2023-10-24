@@ -4,6 +4,8 @@ import { Message, MessageData } from "../types/MessageTypes";
 const initialState: MessageData = {
   messages: [],
   chatMode: false,
+  chatID: "",
+  receiver: "",
 };
 
 const messageSlice = createSlice({
@@ -19,8 +21,20 @@ const messageSlice = createSlice({
       };
       state.messages.push(newMessage);
     },
-    openChat: (state) => {
+    openChat: (state, action) => {
       state.chatMode = true;
+      const chatID = action.payload;
+      state.chatID = chatID[0];
+      console.log("CHAT ID :", state.chatID);
+      const splitQuestionMark = chatID[0].split("?");
+      console.log("SONUÇ : ", splitQuestionMark);
+
+      splitQuestionMark.map((i: string) => {
+        if (i != chatID[1].uid) {
+          state.receiver = i;
+          console.log(state.receiver);
+        }
+      });
     },
   },
 });
