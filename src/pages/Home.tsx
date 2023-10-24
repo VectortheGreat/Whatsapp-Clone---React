@@ -78,14 +78,14 @@ const Home = () => {
         <LeftHeader
           setToggleMessageUserBar={setToggleMessageUserBar}
         ></LeftHeader>
-        {openChatMode && token && <RightHeader></RightHeader>}
+        {openChatMode && token && <RightHeader users={users}></RightHeader>}
       </header>
       <section className="grid grid-cols-12">
         <div className="col-span-4">
           {token && <SearchInput></SearchInput>}
           {toggleMessageUserBar && token ? (
             <>
-              <MessageInbox></MessageInbox>
+              <MessageInbox users={users}></MessageInbox>
             </>
           ) : token ? (
             <Users users={users}></Users>

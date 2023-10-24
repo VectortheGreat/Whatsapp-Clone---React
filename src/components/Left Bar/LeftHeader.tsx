@@ -18,7 +18,6 @@ const LeftHeader: React.FC<LeftHeaderProps> = ({ setToggleMessageUserBar }) => {
   const loggedUser = useSelector(
     (state: UserSliceStateSelector) => state.userStore.loggedUser
   );
-  console.log(loggedUser);
   const auth = authFBConfig;
   const dispatch = useDispatch();
   const handleLogout = () => {

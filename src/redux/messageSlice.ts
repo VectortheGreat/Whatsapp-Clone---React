@@ -25,16 +25,7 @@ const messageSlice = createSlice({
       state.chatMode = true;
       const chatID = action.payload;
       state.chatID = chatID[0];
-      console.log("CHAT ID :", state.chatID);
-      const splitQuestionMark = chatID[0].split("?");
-      console.log("SONUÇ : ", splitQuestionMark);
-
-      splitQuestionMark.map((i: string) => {
-        if (i != chatID[1].uid) {
-          state.receiver = i;
-          console.log(state.receiver);
-        }
-      });
+      state.receiver = chatID[1];
     },
   },
 });

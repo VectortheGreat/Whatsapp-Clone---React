@@ -15,9 +15,19 @@ export type UserSliceStateSelector = {
     toggleLoginOrSignup?: boolean;
     loginMode?: boolean;
     loggedUser?: {
-      uid: string;
-      displayName: string;
-      photoURL: string;
+      uid?: string;
+      displayName?: string;
+      photoURL?: string;
     };
   };
+};
+
+export type User = {
+  uid: string;
+  name: string;
+  photo: string;
+};
+
+export type UsersProps = {
+  users: User[];
 };

@@ -1,23 +1,24 @@
+import { UsersProps } from "../../../types/UserTypes";
 import MessageCard from "./MessageCard";
 
-const MessageInbox = () => {
+const MessageInbox: React.FC<UsersProps> = ({ users }) => {
   const messages = [
     {
-      id: 1,
+      id: "uNiqcehUHKfp2gHFQD9638TSRf63",
       avatar: "URL_TO_AVATAR_IMAGE_1",
       name: "John Doe",
       message: "Hello, how are you?",
       time: "12:30 PM",
     },
     {
-      id: 2,
+      id: "zh8WqUhKKsaZxoYiTjMNMSwwbmq1",
       avatar: "URL_TO_AVATAR_IMAGE_2",
       name: "Jane Smith",
       message: "I'm good, thanks!",
       time: "1:15 PM",
     },
   ];
-
+  // console.log(users);
   return (
     <div>
       <div className="border-r border-gray-300">

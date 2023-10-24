@@ -35,7 +35,6 @@ const userSlice = createSlice({
     },
     fetchUsersFromDB: (state, action) => {
       state.users = action.payload;
-      console.log("state.users:", state.users);
     },
   },
 });

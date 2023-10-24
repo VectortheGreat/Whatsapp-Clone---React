@@ -2,21 +2,31 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { GoSearch } from "react-icons/go";
 import { useSelector } from "react-redux";
 import { MessageSliceStateSelector } from "../../types/MessageTypes";
-const RightHeader = () => {
+import { UsersProps } from "../../types/UserTypes";
+import { useState, useEffect } from "react";
+
+const RightHeader: React.FC<UsersProps> = ({ users }) => {
   const receiver = useSelector(
     (state: MessageSliceStateSelector) => state.messageStore.receiver
   );
+  const foundUser = users.find((user) => user.uid === receiver);
+  console.log(foundUser);
+  useEffect(() => {
+    console.log("RECEIVER: ", receiver);
+    console.log("users: ", users);
+  }, [receiver, users]);
+
   return (
     <div className="col-span-8 p-2">
       <div className="flex justify-between items-center">
         <div className="flex space-x-3">
           <img
-            src="https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
+            src={foundUser.photo}
             alt=""
             className="w-12 h-12 object-cover rounded-full"
           />
           <div>
-            <h2>User Name</h2>
+            <h2>{foundUser.name}</h2>
             <p>Click here for the User Information</p>
           </div>
         </div>

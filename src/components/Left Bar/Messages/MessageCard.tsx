@@ -15,9 +15,9 @@ const MessageCard: React.FC<MessageCardProps> = ({ id, name }) => {
   const dispatch = useDispatch();
   const loggedUser = useSelector(
     (state: UserSliceStateSelector) => state.userStore.loggedUser
-  );
+  ) || { uid: "", displayName: "", photoURL: "" };
+
   const [chatID, setChatID] = useState<string>("");
-  console.log(chatID);
   const openChatComp = async () => {
     const messageRef = ref(database, "messages");
     get(messageRef)
@@ -26,15 +26,19 @@ const MessageCard: React.FC<MessageCardProps> = ({ id, name }) => {
           let foundProduct = false;
           snapshot.forEach((childSnapshot) => {
             const message = childSnapshot.val();
-            // console.log("MESAJ ID: ", message.id);
+            // console.warn("MESAJ ID: ", message.id);
             // console.log("Koşul ID: ", `${id}?${loggedUser.uid}`);
+
             if (
               message.id === `${id}?${loggedUser.uid}` ||
               message.id === `${loggedUser.uid}?${id}`
             ) {
+              const splitQuestionMark = message.id.split("?");
+              // console.error(message.id);
+              // console.error(`${id}?${loggedUser.uid}`);
               setChatID(message.id);
               foundProduct = true;
-              dispatch(openChat([message.id, loggedUser]));
+              dispatch(openChat([message.id, splitQuestionMark[0]]));
             }
           });
           //* Creates a new collection
@@ -70,7 +74,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ id, name }) => {
   };
 
   useEffect(() => {
-    console.log(chatID);
+    // console.log(chatID);
   }, [chatID]);
 
   return (
