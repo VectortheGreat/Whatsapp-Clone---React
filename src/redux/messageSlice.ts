@@ -5,6 +5,7 @@ const initialState: MessageData = {
   messages: [],
   chatMode: false,
   chatID: "",
+  chatKey: "",
   receiver: "",
 };
 
@@ -26,6 +27,7 @@ const messageSlice = createSlice({
       const chatID = action.payload;
       state.chatID = chatID[0];
       state.receiver = chatID[1];
+      state.chatKey = chatID[2];
     },
   },
 });

@@ -101,10 +101,7 @@ const Home = () => {
               <Signup></Signup>
             )
           ) : openChatMode ? (
-            <>
-              <Chat></Chat>
-              <ChatInput></ChatInput>
-            </>
+            <Chat></Chat>
           ) : (
             <NoChat></NoChat>
           )}

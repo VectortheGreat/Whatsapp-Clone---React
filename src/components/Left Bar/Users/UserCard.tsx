@@ -11,7 +11,6 @@ type UserCardProps = {
 };
 
 const UserCard: React.FC<UserCardProps> = ({ id, name, photo }) => {
-  console.log(id);
   const dispatch = useDispatch();
   const loggedUser = useSelector(
     (state: UserSliceStateSelector) => state.userStore.loggedUser
@@ -32,11 +31,12 @@ const UserCard: React.FC<UserCardProps> = ({ id, name, photo }) => {
               message.id === `${loggedUser.uid}?${id}`
             ) {
               const splitQuestionMark = message.id.split("?");
+              const chatKey = childSnapshot.key;
               // console.error(message.id);
               // console.error(`${id}?${loggedUser.uid}`);
               //setChatID(message.id);
               foundProduct = true;
-              dispatch(openChat([message.id, splitQuestionMark[0]]));
+              dispatch(openChat([message.id, splitQuestionMark[0], chatKey]));
             }
           });
           //* Creates a new collection
@@ -45,7 +45,13 @@ const UserCard: React.FC<UserCardProps> = ({ id, name, photo }) => {
             set(messagesRef, {
               id: `${id}?${loggedUser.uid}`,
               name: `${name} and ${loggedUser.displayName} Chat`,
-              messages: [{}],
+              messages: [
+                {
+                  messageId: 0,
+                  content: "",
+                  date: "",
+                },
+              ],
             });
             console.warn("Created a new Collection");
           }
@@ -57,9 +63,9 @@ const UserCard: React.FC<UserCardProps> = ({ id, name, photo }) => {
             name: `${name} and ${loggedUser.displayName} Chat`,
             messages: [
               {
-                messageId: 1,
-                content: "Test Mesaj",
-                date: "23.01.2023",
+                messageId: 0,
+                content: "",
+                date: "",
               },
             ],
           });

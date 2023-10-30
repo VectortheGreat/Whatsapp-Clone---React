@@ -9,6 +9,7 @@ export type MessageData = {
   messages: Message[];
   chatMode: boolean;
   chatID: string;
+  chatKey: string;
   receiver: string;
 };
 
@@ -17,5 +18,7 @@ export type MessageSliceStateSelector = {
     messages?: string[];
     chatMode?: boolean;
     receiver?: string;
+    chatID?: string;
+    chatKey?: string;
   };
 };
