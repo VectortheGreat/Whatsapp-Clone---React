@@ -3,7 +3,7 @@ import { GoSearch } from "react-icons/go";
 import { useSelector } from "react-redux";
 import { MessageSliceStateSelector } from "../../types/MessageTypes";
 import { UsersProps } from "../../types/UserTypes";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 const RightHeader: React.FC<UsersProps> = ({ users }) => {
   const receiver = useSelector(
@@ -12,8 +12,8 @@ const RightHeader: React.FC<UsersProps> = ({ users }) => {
   const foundUser = users.find((user) => user.uid === receiver);
   console.log(foundUser);
   useEffect(() => {
-    console.log("RECEIVER: ", receiver);
-    console.log("users: ", users);
+    // console.log("RECEIVER: ", receiver);
+    // console.log("users: ", users);
   }, [receiver, users]);
 
   return (

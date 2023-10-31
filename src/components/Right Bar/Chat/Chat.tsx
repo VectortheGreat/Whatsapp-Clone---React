@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
 import ChatMessage from "./ChatMessage";
-import { MessageSliceStateSelector } from "../../../types/MessageTypes";
-import { useSelector } from "react-redux";
+import {
+  Message,
+  MessageSliceStateSelector,
+} from "../../../types/MessageTypes";
+import { useDispatch, useSelector } from "react-redux";
 import ChatInput from "./ChatInput";
 import { database } from "../../../config/config";
-import { child, get, push, ref, set, update } from "firebase/database";
-
-type MessageValue = {
-  id: number;
-  content: string;
-  date: string;
-  hour: string;
-};
+import { get, ref, update } from "firebase/database";
+import { newMessage } from "../../../redux/messageSlice";
 
 const Chat = () => {
   const messages = useSelector(
@@ -23,7 +20,10 @@ const Chat = () => {
   const chatKey = useSelector(
     (state: MessageSliceStateSelector) => state.messageStore.chatKey
   );
-  const [messageData, setMessageData] = useState<string[]>(messages);
+  const dispatch = useDispatch();
+  const [messageData, setMessageData] = useState<string[]>([]);
+  const [messageDataBase, setMessageDataBase] = useState<string[]>([]);
+
   const openChatComp = async () => {
     const messageRef = ref(database, "messages");
     get(messageRef)
@@ -32,14 +32,17 @@ const Chat = () => {
           snapshot.forEach((childSnapshot) => {
             const message = childSnapshot.val();
             const messageKey = childSnapshot.key;
-
             // console.warn("MESAJ ID: ", message.id);
             // console.log("Koşul ID: ", chatID);
             if (messageKey === chatKey) {
               const messageKeyRef = `messages/${messageKey}`;
               const newMessageRef = ref(database, messageKeyRef);
-              const value: MessageValue = messageData[0];
+              // const value: Message = messageData[0];
+              const value: Message =
+                messageData.length > 0 ? messageData[0] : null;
+
               if (!message.messages) {
+                console.log(true);
                 update(newMessageRef, {
                   messages: [
                     {
@@ -51,31 +54,9 @@ const Chat = () => {
                   ],
                 });
               } else {
-                console.error("messages koleksiyonu zaten var");
-                // const value = [
-                //   {
-                //     messageId: 2,
-                //     content: "Test Mesaj",
-                //     date: "23.01.2023",
-                //   },
-                // ];
-                // const value = messageData[messageData.length - 1];
-                // update(newMessageRef, {
-                //   messages: [
-                //     {
-                //       messageId: value.id,
-                //       content: value.content,
-                //       date: value.date,
-                //     },
-                //     {
-                //       messageId: value.id,
-                //       content: value.content,
-                //       date: value.date,
-                //     },
-                //   ],
-                // });
+                //console.error("messages koleksiyonu zaten var");
                 const updatedMessages = messageData.map((message, index) => {
-                  if (index === 0) {
+                  if (index === value.id) {
                     return {
                       messageId: value.id,
                       content: value.content,
@@ -83,14 +64,15 @@ const Chat = () => {
                       hour: value.hour,
                     };
                   }
+                  //  console.log("Message: ", message);
+                  // console.log("Index: ", index);
                   return message;
                 });
-
+                console.log(false);
                 update(newMessageRef, {
                   messages: updatedMessages,
                 });
               }
-              console.log("MessageDB: ", message.messages);
             }
           });
         } else {
@@ -98,29 +80,55 @@ const Chat = () => {
         }
       })
       .catch((error) => {
-        //console.error("Veri çekme hatası:", error);
+        console.error("Veri çekme hatası:", error);
       });
   };
 
+  const getMessages = async () => {
+    const messageRef = ref(database, "messages");
+    get(messageRef).then((snapshot) => {
+      if (snapshot.exists()) {
+        snapshot.forEach((childSnapshot) => {
+          const messageKey = childSnapshot.key;
+          const message = childSnapshot.val();
+          if (messageKey === chatKey) {
+            setMessageDataBase(message.messages);
+            //dispatch(newMessage(message.messages));
+          }
+        });
+      }
+    });
+  };
+
   useEffect(() => {
+    console.warn(messages);
+    console.warn(messageDataBase);
     setMessageData([...messages]);
+    setMessageDataBase([...messages]);
   }, [messages]);
   useEffect(() => {
-    console.log("messageData: ", messageData);
-
+    console.log("messageData: ", messageDataBase);
+    console.log("messageDataBase: ", messageData);
+    //  getMessages();
     openChatComp();
   }, [messageData]);
 
-  // console.log("messages: ", messages);
   return (
     <div className="flex flex-col bg-gray-700">
       <div className="flex-grow overflow-y-auto px-4 h-[calc(100vh-132px)]">
-        {messageData.map((msg, i) => (
+        {/* {messages.map((msg, i) => (
+          <ChatMessage key={i} msg={msg}></ChatMessage>
+        ))} */}
+        {messages?.map((msg, i) => (
           <ChatMessage key={i} msg={msg}></ChatMessage>
         ))}
-        {messageData.map((msg, i) => (
-          <ChatMessage key={i} msg={msg}></ChatMessage>
-        ))}
+        {/* {messageDataBase?.length > 0
+          ? messageDataBase.map((msg, i) => (
+              <ChatMessage key={i} msg={msg}></ChatMessage>
+            ))
+          : messageData.map((msg, i) => (
+              <ChatMessage key={i} msg={msg}></ChatMessage>
+            ))} */}
       </div>
       <ChatInput></ChatInput>
     </div>
