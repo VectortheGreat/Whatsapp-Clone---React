@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { openChat } from "../../../redux/messageSlice";
 import { get, push, ref, set } from "firebase/database";
-import { database } from "../../../config/config";
+import { authFBConfig, database } from "../../../config/config";
 import { UserSliceStateSelector } from "../../../types/UserTypes";
 import "firebase/database";
 import { useState, useEffect } from "react";
@@ -81,7 +81,7 @@ const MessageCard: React.FC<MessageCardProps> = ({ id, name }) => {
     <div>
       <div
         className="flex p-3 border-b border-gray-300 hover:bg-gray-100 cursor-pointer"
-        onClick={openChatComp}
+        onClick={cardSubmit}
       >
         <div className="w-12 h-12 rounded-full overflow-hidden">
           <img

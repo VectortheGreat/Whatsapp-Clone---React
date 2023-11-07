@@ -1,137 +1,97 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { BiSolidSend } from "react-icons/bi";
 import ChatMessage from "./ChatMessage";
 import {
-  Message,
-  MessageSliceStateSelector,
-} from "../../../types/MessageTypes";
-import { useDispatch, useSelector } from "react-redux";
-import ChatInput from "./ChatInput";
-import { database } from "../../../config/config";
-import { get, ref, update } from "firebase/database";
-import { newMessage } from "../../../redux/messageSlice";
+  addDoc,
+  collection,
+  serverTimestamp,
+  query,
+  where,
+  onSnapshot,
+  orderBy,
+} from "@firebase/firestore";
+import { authFBConfig, db } from "../../../config/config";
+import { useSelector } from "react-redux";
+import { MessageSliceStateSelector } from "../../../types/MessageTypes";
 
 const Chat = () => {
-  const messages = useSelector(
-    (state: MessageSliceStateSelector) => state.messageStore.messages || []
-  );
+  const [newMessage, setNewMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  const messagesRef = collection(db, "messages");
   const chatID = useSelector(
-    (state: MessageSliceStateSelector) => state.messageStore.chatID
+    (state: MessageSliceStateSelector) => state.messageStore.chatID || []
   );
-  const chatKey = useSelector(
-    (state: MessageSliceStateSelector) => state.messageStore.chatKey
-  );
-  const dispatch = useDispatch();
-  const [messageData, setMessageData] = useState<string[]>([]);
-  const [messageDataBase, setMessageDataBase] = useState<string[]>([]);
-
-  const openChatComp = async () => {
-    const messageRef = ref(database, "messages");
-    get(messageRef)
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          snapshot.forEach((childSnapshot) => {
-            const message = childSnapshot.val();
-            const messageKey = childSnapshot.key;
-            // console.warn("MESAJ ID: ", message.id);
-            // console.log("Koşul ID: ", chatID);
-            if (messageKey === chatKey) {
-              const messageKeyRef = `messages/${messageKey}`;
-              const newMessageRef = ref(database, messageKeyRef);
-              // const value: Message = messageData[0];
-              const value: Message =
-                messageData.length > 0 ? messageData[0] : null;
-
-              if (!message.messages) {
-                console.log(true);
-                update(newMessageRef, {
-                  messages: [
-                    {
-                      messageId: value.id,
-                      content: value.content,
-                      date: value.date,
-                      hour: value.hour,
-                    },
-                  ],
-                });
-              } else {
-                //console.error("messages koleksiyonu zaten var");
-                const updatedMessages = messageData.map((message, index) => {
-                  if (index === value.id) {
-                    return {
-                      messageId: value.id,
-                      content: value.content,
-                      date: value.date,
-                      hour: value.hour,
-                    };
-                  }
-                  //  console.log("Message: ", message);
-                  // console.log("Index: ", index);
-                  return message;
-                });
-                console.log(false);
-                update(newMessageRef, {
-                  messages: updatedMessages,
-                });
-              }
-            }
-          });
-        } else {
-          console.error("Couldn't Find Messages Collection");
-        }
-      })
-      .catch((error) => {
-        console.error("Veri çekme hatası:", error);
+  useEffect(() => {
+    console.log(chatID);
+    const querryMessages = query(
+      messagesRef,
+      where("room", "==", chatID),
+      orderBy("createdAt")
+    );
+    const unsuscribe = onSnapshot(querryMessages, (snapshot) => {
+      // eslint-disable-next-line prefer-const
+      let messages = [];
+      snapshot.forEach((doc) => {
+        messages.push({ ...doc.data(), id: doc.id });
       });
-  };
-
-  const getMessages = async () => {
-    const messageRef = ref(database, "messages");
-    get(messageRef).then((snapshot) => {
-      if (snapshot.exists()) {
-        snapshot.forEach((childSnapshot) => {
-          const messageKey = childSnapshot.key;
-          const message = childSnapshot.val();
-          if (messageKey === chatKey) {
-            setMessageDataBase(message.messages);
-            //dispatch(newMessage(message.messages));
-          }
-        });
-      }
+      console.log(messages);
+      setMessages(messages);
     });
+    return () => unsuscribe();
+  }, [chatID]);
+  const handleSubmit = async () => {
+    await addDoc(messagesRef, {
+      text: newMessage,
+      createdAt: serverTimestamp(),
+      user: authFBConfig.currentUser?.displayName,
+      userId: authFBConfig.lastNotifiedUid,
+      room: chatID,
+    });
+    setNewMessage("");
   };
-
-  useEffect(() => {
-    console.warn(messages);
-    console.warn(messageDataBase);
-    setMessageData([...messages]);
-    setMessageDataBase([...messages]);
-  }, [messages]);
-  useEffect(() => {
-    console.log("messageData: ", messageDataBase);
-    console.log("messageDataBase: ", messageData);
-    //  getMessages();
-    openChatComp();
-  }, [messageData]);
-
   return (
     <div className="flex flex-col bg-gray-700">
       <div className="flex-grow overflow-y-auto px-4 h-[calc(100vh-132px)]">
-        {/* {messages.map((msg, i) => (
-          <ChatMessage key={i} msg={msg}></ChatMessage>
-        ))} */}
-        {messages?.map((msg, i) => (
-          <ChatMessage key={i} msg={msg}></ChatMessage>
-        ))}
-        {/* {messageDataBase?.length > 0
-          ? messageDataBase.map((msg, i) => (
-              <ChatMessage key={i} msg={msg}></ChatMessage>
-            ))
-          : messageData.map((msg, i) => (
-              <ChatMessage key={i} msg={msg}></ChatMessage>
-            ))} */}
+        <div>
+          {messages.map((message) => (
+            <ChatMessage key={message.id} msg={message}></ChatMessage>
+          ))}
+        </div>
       </div>
-      <ChatInput></ChatInput>
+      <div className="bg-gray-200 px-4 py-2 flex items-center text-black">
+        {/* <button className="text-gray-600">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          />
+        </svg>
+      </button> */}
+        <input
+          type="text"
+          placeholder="Type a message..."
+          className="bg-transparent outline-none p-2 flex-grow"
+          value={newMessage}
+          onChange={(event) => setNewMessage(event.target.value)}
+          // ref={inputRef}
+          // onKeyPress={(e) => onKeyPressInput(e)}
+        />
+        <BiSolidSend
+          size={24}
+          className="text-green-500 cursor-pointer"
+          onClick={handleSubmit}
+        ></BiSolidSend>
+      </div>
     </div>
   );
 };
+
 export default Chat;
