@@ -7,7 +7,7 @@ const initialState: userSliceType = {
   loggedUser: storedUser ? JSON.parse(storedUser) : null,
   auth: "",
   token: localStorage.getItem("user") || "",
-  loginMode: true,
+  loginMode: null,
   toggleLoginOrSignup: true,
 };
 const userSlice = createSlice({
@@ -27,8 +27,8 @@ const userSlice = createSlice({
         console.log(state.loggedUser);
       }
     },
-    loginModeToggle: (state) => {
-      state.loginMode = !state.loginMode;
+    loginModeToggle: (state, action) => {
+      state.loginMode = action.payload;
     },
     toggleLoginOrSignupReducer: (state) => {
       state.toggleLoginOrSignup = !state.toggleLoginOrSignup;

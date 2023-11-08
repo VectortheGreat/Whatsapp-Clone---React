@@ -6,11 +6,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginModeToggle, tokenInfo } from "../../redux/userSlice";
 import { authFBConfig } from "../../config/config";
 import { UserSliceStateSelector } from "../../types/UserTypes";
+import { useState } from "react";
 
 type LeftHeaderProps = {
   setToggleMessageUserBar: (chatMode: boolean) => void;
 };
-const LeftHeader: React.FC<LeftHeaderProps> = ({ setToggleMessageUserBar }) => {
+const LeftHeader: React.FC<LeftHeaderProps> = ({
+  setToggleMessageUserBar,
+  setUserSettingsModalOpen,
+}) => {
   const token = useSelector(
     (state: UserSliceStateSelector) => state.userStore.token
   );
@@ -30,7 +34,7 @@ const LeftHeader: React.FC<LeftHeaderProps> = ({ setToggleMessageUserBar }) => {
           console.error(error);
         });
       dispatch(tokenInfo(""));
-      dispatch(loginModeToggle());
+      dispatch(loginModeToggle(false));
       auth.onAuthStateChanged((user) => {
         if (user) {
           localStorage.removeItem("user");
@@ -40,6 +44,10 @@ const LeftHeader: React.FC<LeftHeaderProps> = ({ setToggleMessageUserBar }) => {
       console.error("User is not authenticated. Cannot sign out.");
     }
   };
+  const [toggleThreeDots, setToggleThreeDots] = useState(false);
+  const toggleThreeDotsFunc = () => {
+    setToggleThreeDots(!toggleThreeDots);
+  };
 
   return (
     <div className="col-span-4 p-2">
@@ -47,11 +55,13 @@ const LeftHeader: React.FC<LeftHeaderProps> = ({ setToggleMessageUserBar }) => {
         <div className="flex justify-between items-center px-2">
           <div className="flex space-x-5">
             <img
-              src={loggedUser.photoURL}
+              src={`/src/assets/avatars/${authFBConfig.currentUser?.photoURL}.jpg`}
               alt="Profile Picture"
               className="w-12 h-12 object-cover rounded-full"
             />
-            <h1 className="mt-1">{loggedUser.displayName as string}</h1>
+            <h1 className="mt-1">
+              {authFBConfig.currentUser?.displayName as string}
+            </h1>
           </div>
           <div className="flex space-x-4">
             <BsChatRightDots
@@ -63,10 +73,30 @@ const LeftHeader: React.FC<LeftHeaderProps> = ({ setToggleMessageUserBar }) => {
                 )
               }
             ></BsChatRightDots>
-            <BsThreeDotsVertical
-              className="cursor-pointer hover:text-rose-600"
-              size={24}
-            ></BsThreeDotsVertical>
+            <div onClick={toggleThreeDotsFunc}>
+              <BsThreeDotsVertical
+                className="cursor-pointer hover:text-rose-600"
+                size={24}
+              ></BsThreeDotsVertical>
+              {toggleThreeDots && (
+                <div className="bg-white rounded shadow-lg text-black absolute left-72 mt-2 ">
+                  <ul>
+                    <li
+                      onClick={() => setUserSettingsModalOpen(true)}
+                      className="border-black border-b-2 p-2 hover:bg-slate-500 cursor-pointer"
+                    >
+                      Settings
+                    </li>
+                    <li
+                      onClick={handleLogout}
+                      className="border-black border-b-2 p-2 hover:bg-slate-500 cursor-pointer"
+                    >
+                      Logout
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
             <GoSignOut
               className="cursor-pointer hover:text-rose-600"
               size={24}

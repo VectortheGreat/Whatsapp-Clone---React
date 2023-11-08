@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { BiSolidSend } from "react-icons/bi";
 import ChatMessage from "./ChatMessage";
 import {
@@ -49,6 +49,12 @@ const Chat = () => {
     });
     setNewMessage("");
   };
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const onKeyPressInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSubmit();
+    }
+  };
   return (
     <div className="flex flex-col bg-gray-700">
       <div className="flex-grow overflow-y-auto px-4 h-[calc(100vh-132px)]">
@@ -81,8 +87,8 @@ const Chat = () => {
           className="bg-transparent outline-none p-2 flex-grow"
           value={newMessage}
           onChange={(event) => setNewMessage(event.target.value)}
-          // ref={inputRef}
-          // onKeyPress={(e) => onKeyPressInput(e)}
+          ref={inputRef}
+          onKeyPress={(e) => onKeyPressInput(e)}
         />
         <BiSolidSend
           size={24}
