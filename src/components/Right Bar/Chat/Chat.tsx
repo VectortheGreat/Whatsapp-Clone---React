@@ -44,6 +44,7 @@ const Chat = () => {
       text: newMessage,
       createdAt: serverTimestamp(),
       user: authFBConfig.currentUser?.displayName,
+      // @ts-ignore
       userId: authFBConfig.lastNotifiedUid,
       room: chatID,
     });

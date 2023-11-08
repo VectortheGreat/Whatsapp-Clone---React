@@ -45,7 +45,6 @@ export const {
   loginModeToggle,
   toggleLoginOrSignupReducer,
   fetchUsersFromDB,
-  loggedUserInfo,
 } = userSlice.actions;
 
 export default userSlice.reducer;
