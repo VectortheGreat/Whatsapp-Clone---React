@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useDispatch } from "react-redux";
 import { newChatID } from "../../../redux/messageSlice";
+import { authFBConfig } from "../../../config/config";
 
 type UserCardProps = {
   name: string;
@@ -13,7 +14,7 @@ const UserCard: React.FC<UserCardProps> = ({ id, name, photo, status }) => {
   const dispatch = useDispatch();
   const cardSubmit = () => {
     // @ts-ignore
-    dispatch(newChatID([id, lastNotifiedUid]));
+    dispatch(newChatID([id, authFBConfig.lastNotifiedUid]));
   };
   return (
     <div>
