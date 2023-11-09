@@ -38,8 +38,9 @@ const Login = () => {
         uid: user.uid,
         email: user.email,
       };
-      dispatch(loginModeToggle());
+      dispatch(loginModeToggle(true));
       dispatch(authInfo(userPayload));
+      location.reload();
     } catch (error) {
       console.error("Authentication failed:", error);
     }
