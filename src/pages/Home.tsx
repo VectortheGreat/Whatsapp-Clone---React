@@ -1,9 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import LeftHeader from "../components/Left Bar/LeftHeader";
 import MessageInbox from "../components/Left Bar/Messages/MessageInbox";
 import SearchInput from "../components/Left Bar/SearchInput";
 import Chat from "../components/Right Bar/Chat/Chat";
-import ChatInput from "../components/Right Bar/Chat/ChatInput";
 import NoChat from "../components/Right Bar/Chat/NoChat";
 import RightHeader from "../components/Right Bar/RightHeader";
 import Users from "../components/Left Bar/Users/Users";
@@ -15,6 +15,8 @@ import { authFBConfig, database } from "../config/config";
 import Signup from "../components/Right Bar/Auth/Signup";
 import { MessageSliceStateSelector } from "../types/MessageTypes";
 import { get, ref } from "firebase/database";
+import UserInfo from "../components/Right Bar/Chat/UserInfo";
+import UserSettings from "../components/Left Bar/Users/UserSettings";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -30,6 +32,9 @@ const Home = () => {
     (state: MessageSliceStateSelector) => state.messageStore.chatMode
   );
 
+  const [userInfoModalOpen, setUserInfoModalOpen] = useState(false);
+  const [userSettingsModalOpen, setUserSettingsModalOpen] = useState(false);
+
   const auth = authFBConfig;
   const authInfoPayload = {
     app: {
@@ -40,7 +45,6 @@ const Home = () => {
 
   useEffect(() => {
     dispatch(authInfo(authInfoPayload));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const token = useSelector(
@@ -71,40 +75,62 @@ const Home = () => {
   useEffect(() => {
     getUsers();
   }, []);
-
+  //console.log(loginMode);
   return (
     <div>
       <header className="grid grid-cols-12">
         <LeftHeader
           setToggleMessageUserBar={setToggleMessageUserBar}
+          // @ts-ignore
+          setUserSettingsModalOpen={setUserSettingsModalOpen}
         ></LeftHeader>
-        {openChatMode && token && <RightHeader users={users}></RightHeader>}
+        {openChatMode && token && (
+          <RightHeader
+            setUserInfoModalOpen={setUserInfoModalOpen}
+            // @ts-ignore
+            users={users}
+          ></RightHeader>
+        )}
       </header>
       <section className="grid grid-cols-12">
         <div className="col-span-4">
           {token && <SearchInput></SearchInput>}
           {toggleMessageUserBar && token ? (
             <>
-              <MessageInbox users={users}></MessageInbox>
+              <MessageInbox // @ts-ignore
+                users={users}
+              ></MessageInbox>
             </>
           ) : token ? (
+            // @ts-ignore
             <Users users={users}></Users>
           ) : (
             <span></span>
           )}
         </div>
         <div className="col-span-8">
-          {loginMode && !token ? (
+          {!loginMode && !token ? (
             toggleLoginOrSignup ? (
-              <Login auth={auth} loginMode={loginMode} token={token}></Login>
+              <Login></Login>
             ) : (
               <Signup></Signup>
             )
-          ) : openChatMode ? (
+          ) : openChatMode && !loginMode ? (
             <Chat></Chat>
           ) : (
             <NoChat></NoChat>
           )}
+          <UserInfo
+            setUserInfoModalOpen={setUserInfoModalOpen}
+            userInfoModalOpen={userInfoModalOpen}
+            users={users}
+          ></UserInfo>
+          <UserSettings
+            setUserSettingsModalOpen={setUserSettingsModalOpen}
+            userSettingsModalOpen={userSettingsModalOpen}
+            // @ts-ignore
+            users={users}
+          ></UserSettings>
         </div>
       </section>
     </div>
