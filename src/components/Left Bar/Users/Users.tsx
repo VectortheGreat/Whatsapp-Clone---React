@@ -1,10 +1,16 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import { DocumentData } from "@firebase/firestore";
 import { authFBConfig } from "../../../config/config";
-import { UsersProps } from "../../../types/UserTypes";
 import UserCard from "./UserCard";
 
+type UsersProps = {
+  users?: { id: string; data: DocumentData }[];
+};
+
 const Users: React.FC<UsersProps> = ({ users }) => {
-  const filteredUsers = users.filter(
-    (user) => user.uid !== authFBConfig.lastNotifiedUid
+  const filteredUsers = (users ?? []).filter(
+    // @ts-ignore
+    (user) => user.id !== authFBConfig.lastNotifiedUid
   );
 
   return (
@@ -14,10 +20,11 @@ const Users: React.FC<UsersProps> = ({ users }) => {
           <h1 className="text-center text-xl">User List</h1>
           {filteredUsers.map((user) => (
             <UserCard
-              key={user.uid}
-              id={user.uid}
-              name={user.name}
-              photo={user.photo}
+              key={user.data.uid}
+              id={user.data.uid}
+              name={user.data.name}
+              photo={user.data.photo}
+              status={user.data.status}
             />
           ))}
         </div>

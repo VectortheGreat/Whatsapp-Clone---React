@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { authFBConfig } from "../../../config/config";
 
@@ -13,16 +14,17 @@ type newChatMessageProps = {
 };
 
 const ChatMessage: React.FC<newChatMessageProps> = ({ msg }) => {
+  // @ts-ignore
   const user = authFBConfig.lastNotifiedUid;
   if (!msg.createdAt) {
     return null;
   }
-  const milliseconds =
+  const milliseconds = // @ts-ignore
     msg.createdAt.seconds * 1000 + msg.createdAt.nanoseconds / 1000000;
   const date = new Date(milliseconds);
-  const year = date.getFullYear();
-  const month = date.toLocaleString("default", { month: "short" });
-  const day = date.getDate();
+  // const year = date.getFullYear();
+  // const month = date.toLocaleString("default", { month: "short" });
+  // const day = date.getDate();
   const hour = date.toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",

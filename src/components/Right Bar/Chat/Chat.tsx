@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useState, useEffect, useRef } from "react";
 import { BiSolidSend } from "react-icons/bi";
 import ChatMessage from "./ChatMessage";
@@ -14,36 +15,47 @@ import { authFBConfig, db } from "../../../config/config";
 import { useSelector } from "react-redux";
 import { MessageSliceStateSelector } from "../../../types/MessageTypes";
 
+type Message = {
+  text: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  createdAt: any;
+  user: string;
+  userId: string;
+  room: string;
+  id: string;
+};
+
 const Chat = () => {
   const [newMessage, setNewMessage] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const messagesRef = collection(db, "messages");
   const chatID = useSelector(
     (state: MessageSliceStateSelector) => state.messageStore.chatID || []
   );
   useEffect(() => {
-    console.log(chatID);
     const querryMessages = query(
       messagesRef,
       where("room", "==", chatID),
       orderBy("createdAt")
     );
     const unsuscribe = onSnapshot(querryMessages, (snapshot) => {
-      // eslint-disable-next-line prefer-const
-      let messages = [];
+      const messages: Message[] = [];
       snapshot.forEach((doc) => {
+        // @ts-ignore
         messages.push({ ...doc.data(), id: doc.id });
       });
       console.log(messages);
       setMessages(messages);
     });
     return () => unsuscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatID]);
   const handleSubmit = async () => {
     await addDoc(messagesRef, {
       text: newMessage,
       createdAt: serverTimestamp(),
       user: authFBConfig.currentUser?.displayName,
+      // @ts-ignore
       userId: authFBConfig.lastNotifiedUid,
       room: chatID,
     });

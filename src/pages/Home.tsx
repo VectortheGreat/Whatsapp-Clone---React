@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useEffect, useState } from "react";
 import LeftHeader from "../components/Left Bar/LeftHeader";
 import MessageInbox from "../components/Left Bar/Messages/MessageInbox";
@@ -11,17 +11,16 @@ import Login from "../components/Right Bar/Auth/Login";
 import { useDispatch, useSelector } from "react-redux";
 import { authInfo, fetchUsersFromDB } from "../redux/userSlice";
 import { UserSliceStateSelector } from "../types/UserTypes";
-import { authFBConfig, database } from "../config/config";
+import { authFBConfig, db } from "../config/config";
 import Signup from "../components/Right Bar/Auth/Signup";
 import { MessageSliceStateSelector } from "../types/MessageTypes";
-import { get, ref } from "firebase/database";
 import UserInfo from "../components/Right Bar/Chat/UserInfo";
 import UserSettings from "../components/Left Bar/Users/UserSettings";
+import { DocumentData, collection, getDocs } from "@firebase/firestore";
 
 const Home = () => {
   const dispatch = useDispatch();
-  const [toggleMessageUserBar, setToggleMessageUserBar] =
-    useState<boolean>(false);
+  const [toggleMessageUserBar] = useState<boolean>(false);
   const loginMode = useSelector(
     (state: UserSliceStateSelector) => state.userStore.loginMode
   );
@@ -55,37 +54,32 @@ const Home = () => {
   const users = useSelector(
     (state: UserSliceStateSelector) => state.userStore.users
   );
-  const getUsers = async () => {
-    const usersRef = ref(database, "users");
-    get(usersRef)
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          const usersData = snapshot.val();
-          const usersArray = Object.values(usersData);
-          dispatch(fetchUsersFromDB(usersArray));
-        } else {
-          console.log("Kullanıcı verileri bulunamadı.");
-        }
-      })
-      .catch((error) => {
-        console.error("Veri çekme hatası:", error);
-      });
+
+  const fetchFromDB = async () => {
+    const usersCollectionRef = collection(db, "users");
+    const querySnapshot = await getDocs(usersCollectionRef);
+    const users: { id: string; data: DocumentData }[] = [];
+    querySnapshot.forEach((doc) => {
+      users.push({ id: doc.id, data: doc.data() });
+    });
+    dispatch(fetchUsersFromDB(users));
   };
 
   useEffect(() => {
-    getUsers();
+    fetchFromDB();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  //console.log(loginMode);
   return (
     <div>
       <header className="grid grid-cols-12">
         <LeftHeader
-          setToggleMessageUserBar={setToggleMessageUserBar}
           setUserSettingsModalOpen={setUserSettingsModalOpen}
+          //setToggleMessageUserBar={setToggleMessageUserBar}
         ></LeftHeader>
         {openChatMode && token && (
           <RightHeader
-            setIsModalOpen={setIsModalOpen}
+            setUserInfoModalOpen={setUserInfoModalOpen}
+            // @ts-ignore
             users={users}
           ></RightHeader>
         )}
@@ -95,9 +89,10 @@ const Home = () => {
           {token && <SearchInput></SearchInput>}
           {toggleMessageUserBar && token ? (
             <>
-              <MessageInbox users={users}></MessageInbox>
+              <MessageInbox></MessageInbox>
             </>
           ) : token ? (
+            // @ts-ignore
             <Users users={users}></Users>
           ) : (
             <span></span>
@@ -118,11 +113,13 @@ const Home = () => {
           <UserInfo
             setUserInfoModalOpen={setUserInfoModalOpen}
             userInfoModalOpen={userInfoModalOpen}
+            // @ts-ignore
             users={users}
           ></UserInfo>
           <UserSettings
             setUserSettingsModalOpen={setUserSettingsModalOpen}
             userSettingsModalOpen={userSettingsModalOpen}
+            // @ts-ignore
             users={users}
           ></UserSettings>
         </div>

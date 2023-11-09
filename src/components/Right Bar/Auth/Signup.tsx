@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { useDispatch } from "react-redux";
 import { toggleLoginOrSignupReducer } from "../../../redux/userSlice";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { authFBConfig, database } from "../../../config/config";
+import { authFBConfig, db } from "../../../config/config";
 import { SetStateAction, useState } from "react";
 import validator from "validator";
 import { toast } from "react-toastify";
-import { push, ref, set } from "firebase/database";
+import { collection, doc, setDoc } from "@firebase/firestore";
+import { images } from "../../../utils/images";
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -16,19 +18,9 @@ const Signup = () => {
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const handleImageClick = (index: SetStateAction<number>) => {
-    setSelectedImageIndex(index);
+    // @ts-ignore
+    setSelectedImageIndex(images[index].url);
   };
-  const images = [
-    {
-      id: 0,
-      url: "https://static.vecteezy.com/system/resources/previews/019/896/008/original/male-user-avatar-icon-in-flat-design-style-person-signs-illustration-png.png",
-    },
-    {
-      id: 1,
-      url: "https://w7.pngwing.com/pngs/129/292/png-transparent-female-avatar-girl-face-woman-user-flat-classy-users-icon.png",
-    },
-  ];
-
   const handleSignup = async () => {
     try {
       const isEmailValid = validator.isEmail(email);
@@ -49,19 +41,18 @@ const Signup = () => {
 
         await updateProfile(user, {
           displayName: name,
-          photoURL: images[selectedImageIndex].url,
+          photoURL: `${selectedImageIndex}`,
         });
 
         //* DATABASE
-        const usersRef = ref(database, "users");
-        const newUserRef = push(usersRef);
-        set(newUserRef, {
-          uid: user.uid,
+        const userRef = collection(db, "users");
+        const customDocRef = doc(userRef, user.uid);
+        await setDoc(customDocRef, {
           email: user.email,
           name: user.displayName,
-          photo: user.photoURL,
+          photo: selectedImageIndex,
+          uid: user.uid,
         });
-
         console.log("Signed up:", user);
         dispatch(toggleLoginOrSignupReducer());
       }
@@ -72,7 +63,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-black">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 text-black min-w-fit overflow-y-auto">
       <h1>Sign Up</h1>
       <div className="mb-4">
         <label htmlFor="email" className="block text-gray-600">
@@ -111,7 +102,7 @@ const Signup = () => {
         />
       </div>
       <div className="mb-4 flex">
-        {images.map((image, index) => (
+        {/* {images.map((image, index) => (
           <img
             key={image.id}
             src={image.url}
@@ -123,7 +114,22 @@ const Signup = () => {
             }`}
             onClick={() => handleImageClick(index)}
           />
-        ))}
+        ))} */}
+        <div className="grid grid-cols-6 space-x-2">
+          {images.map((image, index) => (
+            <img
+              key={image.id}
+              src={image.url}
+              alt="img"
+              className={`h-20 rounded-full cursor-pointer mxx-auto p-1 ${
+                selectedImageIndex === index
+                  ? "border-4 border-red-900 transform hover:scale-110 transition-transform duration-500"
+                  : ""
+              }`}
+              onClick={() => handleImageClick(index)}
+            />
+          ))}
+        </div>
       </div>
       <div>
         <button

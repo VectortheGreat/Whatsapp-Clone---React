@@ -23,13 +23,13 @@ const messageSlice = createSlice({
       state.messages.push(newMessage);
       console.log(state.messages[0]);
     },
-    openChat: (state, action) => {
-      // state.chatMode = true;
-      // const chatID = action.payload;
-      // //state.chatID = chatID[0];
-      // state.receiver = chatID[1];
-      // state.chatKey = chatID[2];
-    },
+    // openChat: (state, action) => {
+    //   // state.chatMode = true;
+    //   // const chatID = action.payload;
+    //   // //state.chatID = chatID[0];
+    //   // state.receiver = chatID[1];
+    //   // state.chatKey = chatID[2];
+    // },
     newChatID: (state, action) => {
       state.chatMode = true;
       const chatID = action.payload;
@@ -43,6 +43,6 @@ const messageSlice = createSlice({
   },
 });
 
-export const { newMessage, openChat, newChatID } = messageSlice.actions;
+export const { newMessage, newChatID } = messageSlice.actions;
 
 export default messageSlice.reducer;

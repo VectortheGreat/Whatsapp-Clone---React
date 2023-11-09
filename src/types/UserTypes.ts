@@ -1,3 +1,5 @@
+import { DocumentData } from "@firebase/firestore";
+
 export type userSliceType = {
   users: string[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -28,6 +30,13 @@ export type User = {
   photo: string;
 };
 
+// export type UsersProps = {
+//   users: User[];
+// };
+
 export type UsersProps = {
-  users: User[];
+  users?: { id: string; data: DocumentData }[];
+};
+export type UsersPropsArray = {
+  users?: string[];
 };

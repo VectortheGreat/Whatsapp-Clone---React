@@ -7,6 +7,8 @@ const initialState: userSliceType = {
   loggedUser: storedUser ? JSON.parse(storedUser) : null,
   auth: "",
   token: localStorage.getItem("user") || "",
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   loginMode: null,
   toggleLoginOrSignup: true,
 };
@@ -45,7 +47,6 @@ export const {
   loginModeToggle,
   toggleLoginOrSignupReducer,
   fetchUsersFromDB,
-  loggedUserInfo,
 } = userSlice.actions;
 
 export default userSlice.reducer;
