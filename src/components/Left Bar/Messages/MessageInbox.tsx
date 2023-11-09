@@ -1,7 +1,7 @@
 import { UsersProps } from "../../../types/UserTypes";
 import MessageCard from "./MessageCard";
 
-const MessageInbox: React.FC<UsersProps> = () => {
+const MessageInbox: React.FC<UsersProps> = ({ users }) => {
   const messages = [
     {
       id: "uNiqcehUHKfp2gHFQD9638TSRf63",

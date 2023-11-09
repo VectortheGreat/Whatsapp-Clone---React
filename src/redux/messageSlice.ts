@@ -23,7 +23,6 @@ const messageSlice = createSlice({
       state.messages.push(newMessage);
       console.log(state.messages[0]);
     },
-    // @ts-ignore
     openChat: (state, action) => {
       // state.chatMode = true;
       // const chatID = action.payload;

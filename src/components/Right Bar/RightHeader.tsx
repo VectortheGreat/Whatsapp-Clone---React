@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { MessageSliceStateSelector } from "../../types/MessageTypes";
 import { UsersProps } from "../../types/UserTypes";
 import { useEffect } from "react";
-// @ts-ignore
+
 const RightHeader: React.FC<UsersProps> = ({ users, setUserInfoModalOpen }) => {
   const receiver = useSelector(
     (state: MessageSliceStateSelector) => state.messageStore.receiver

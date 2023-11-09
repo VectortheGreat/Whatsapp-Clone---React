@@ -1,10 +1,10 @@
 export type userSliceType = {
   users: string[];
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   auth: any;
   token: string;
   loginMode: boolean;
-  toggleLoginOrSignup: boolean | null;
+  toggleLoginOrSignup: boolean;
   loggedUser: string | null;
 };
 

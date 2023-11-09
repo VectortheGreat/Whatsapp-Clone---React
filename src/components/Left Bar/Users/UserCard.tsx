@@ -11,7 +11,6 @@ type UserCardProps = {
 const UserCard: React.FC<UserCardProps> = ({ id, name, photo }) => {
   const dispatch = useDispatch();
   const cardSubmit = () => {
-    // @ts-ignore
     dispatch(newChatID([id, authFBConfig.lastNotifiedUid]));
   };
   return (

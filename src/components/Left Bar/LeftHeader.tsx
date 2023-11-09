@@ -10,7 +10,6 @@ import { useState } from "react";
 
 type LeftHeaderProps = {
   setToggleMessageUserBar: (chatMode: boolean) => void;
-  setUserSettingsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 const LeftHeader: React.FC<LeftHeaderProps> = ({
   setToggleMessageUserBar,
@@ -20,9 +19,9 @@ const LeftHeader: React.FC<LeftHeaderProps> = ({
     (state: UserSliceStateSelector) => state.userStore.token
   );
 
-  // const loggedUser = useSelector(
-  //   (state: UserSliceStateSelector) => state.userStore.loggedUser
-  // );
+  const loggedUser = useSelector(
+    (state: UserSliceStateSelector) => state.userStore.loggedUser
+  );
   const auth = authFBConfig;
   const dispatch = useDispatch();
   const handleLogout = () => {
@@ -70,7 +69,6 @@ const LeftHeader: React.FC<LeftHeaderProps> = ({
               className="cursor-pointer hover:text-rose-600"
               onClick={() =>
                 setToggleMessageUserBar(
-                  // @ts-ignore
                   (prevToggleMessageUserBar) => !prevToggleMessageUserBar
                 )
               }

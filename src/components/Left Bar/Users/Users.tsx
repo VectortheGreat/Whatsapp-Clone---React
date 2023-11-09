@@ -4,10 +4,9 @@ import UserCard from "./UserCard";
 
 const Users: React.FC<UsersProps> = ({ users }) => {
   const filteredUsers = users.filter(
-    // @ts-ignore
     (user) => user.uid !== authFBConfig.lastNotifiedUid
   );
-  console.log(users);
+
   return (
     <div>
       <div className="border-r border-gray-300">

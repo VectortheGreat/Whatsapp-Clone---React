@@ -81,13 +81,11 @@ const Home = () => {
       <header className="grid grid-cols-12">
         <LeftHeader
           setToggleMessageUserBar={setToggleMessageUserBar}
-          // @ts-ignore
           setUserSettingsModalOpen={setUserSettingsModalOpen}
         ></LeftHeader>
         {openChatMode && token && (
           <RightHeader
-            setUserInfoModalOpen={setUserInfoModalOpen}
-            // @ts-ignore
+            setIsModalOpen={setIsModalOpen}
             users={users}
           ></RightHeader>
         )}
@@ -97,12 +95,9 @@ const Home = () => {
           {token && <SearchInput></SearchInput>}
           {toggleMessageUserBar && token ? (
             <>
-              <MessageInbox // @ts-ignore
-                users={users}
-              ></MessageInbox>
+              <MessageInbox users={users}></MessageInbox>
             </>
           ) : token ? (
-            // @ts-ignore
             <Users users={users}></Users>
           ) : (
             <span></span>
@@ -128,7 +123,6 @@ const Home = () => {
           <UserSettings
             setUserSettingsModalOpen={setUserSettingsModalOpen}
             userSettingsModalOpen={userSettingsModalOpen}
-            // @ts-ignore
             users={users}
           ></UserSettings>
         </div>

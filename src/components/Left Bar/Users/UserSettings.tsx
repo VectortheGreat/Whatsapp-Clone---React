@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { authFBConfig, db } from "../../../config/config";
 import { AiFillCloseCircle } from "react-icons/ai";
+import validator from "validator";
 import { toast } from "react-toastify";
 import {
   updateEmail,
@@ -139,6 +140,8 @@ const UserSettings: React.FC<UserSettingsProps> = ({
   const submitUpdateDatas = async (e) => {
     e.preventDefault();
     try {
+      const isEmailValid = validator.isEmail(dataUpdate.email);
+
       //* AUTH
       const user = authFBConfig.currentUser;
       if (dataUpdate.password !== "") {
@@ -158,8 +161,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
         console.log("photo");
       }
       if (dataUpdate.phone !== "") {
-        // @ts-ignore
-        await updatePhoneNumber(user, dataUpdate.photo);
+        await updatePhoneNumber(user, dataUpdate.phone);
         console.log("phone");
       }
       if (dataUpdate.email !== "") {
@@ -175,7 +177,6 @@ const UserSettings: React.FC<UserSettingsProps> = ({
         name: dataUpdate.name,
         photo: dataUpdate.photo,
         phone: dataUpdate.phone,
-        // @ts-ignore
         uid: authFBConfig.uid,
       });
     } catch (error) {
