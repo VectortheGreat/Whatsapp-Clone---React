@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { toggleLoginOrSignupReducer } from "../../../redux/userSlice";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { authFBConfig, db } from "../../../config/config";
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useState, useEffect } from "react";
 import validator from "validator";
 import { toast } from "react-toastify";
 import { collection, doc, setDoc } from "@firebase/firestore";
@@ -17,10 +17,18 @@ const Signup = () => {
   const auth = authFBConfig;
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [highlightImageIndex, setHighlightImageIndex] = useState(0);
   const handleImageClick = (index: SetStateAction<number>) => {
     // @ts-ignore
     setSelectedImageIndex(images[index].url);
+    // @ts-ignore
+    setHighlightImageIndex(images[index].id - 1);
+    console.log(index);
   };
+  useEffect(() => {
+    handleImageClick(0);
+  }, []);
+
   const handleSignup = async () => {
     try {
       const isEmailValid = validator.isEmail(email);
@@ -122,7 +130,7 @@ const Signup = () => {
               src={image.url}
               alt="img"
               className={`h-20 rounded-full cursor-pointer mxx-auto p-1 ${
-                selectedImageIndex === index
+                highlightImageIndex === index
                   ? "border-4 border-red-900 transform hover:scale-110 transition-transform duration-500"
                   : ""
               }`}

@@ -81,7 +81,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
       const user: User | null = authFBConfig.currentUser;
       const userRef = collection(db, "users");
       // @ts-ignore
-      const customDocRef = doc(userRef, lastNotifiedUid);
+      const customDocRef = doc(userRef, authFBConfig.lastNotifiedUid);
       // if (dataUpdate.password !== "") {
       //   await updatePassword(user, dataUpdate.password);
       //   console.log("password");
