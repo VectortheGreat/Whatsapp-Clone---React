@@ -1,27 +1,33 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
-import { authFBConfig, db } from "../../../config/config";
+import { authFBConfig, db } from "../../../../config/config";
 import { AiFillCloseCircle } from "react-icons/ai";
 import { toast } from "react-toastify";
-import { User, updateProfile } from "firebase/auth";
-import { collection, doc, updateDoc, getDoc } from "@firebase/firestore";
-import { images } from "../../../utils/images";
-
-type UserSettingsProps = {
-  setUserSettingsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  userSettingsModalOpen: boolean;
-};
-
-type UserDataUpdate = {
-  name?: string;
-  email?: string;
-  password?: string;
-  phone?: string;
-  photo?: string;
-  status?: string;
-  uid?: string;
-};
+import { User, signOut, updateProfile } from "firebase/auth";
+import {
+  collection,
+  doc,
+  updateDoc,
+  getDoc,
+  deleteDoc,
+} from "@firebase/firestore";
+import { images } from "../../../../utils/images";
+import { useDispatch, useSelector } from "react-redux";
+import { loginModeToggle, tokenInfo } from "../../../../redux/userSlice";
+import { UserSliceStateSelector } from "../../../../types/UserTypes";
+import EmailSettings from "./Email/EmailSettings";
+import PasswordSettings from "./Password/PasswordSettings";
+import PhoneSettings from "./Phone/PhoneSettings";
+import AvatarSettings from "./Avatar/AvatarSettings";
+import DisplayNameSettings from "./DisplayName/DisplayNameSettings";
+import DeleteSettings from "./Account/DeleteSettings";
+import StatusSettings from "./Account/StatusSettings";
+import AccountDetails from "./Account/AccountDetails";
+import {
+  UserDataUpdate,
+  UserSettingsProps,
+} from "../../../../types/UserSettingsTypes";
 
 const UserSettings: React.FC<UserSettingsProps> = ({
   setUserSettingsModalOpen,
@@ -36,21 +42,15 @@ const UserSettings: React.FC<UserSettingsProps> = ({
     }));
   };
 
-  const [disableChecked, setDisableChecked] = useState(false);
   const [deleteChecked, setDeleteChecked] = useState(false);
-
-  const handleDisableChange = () => {
-    setDisableChecked(!disableChecked);
-    if (deleteChecked) {
-      setDeleteChecked(false);
-    }
-  };
+  // const [verifyEmailModal, setVerifyEmailModal] = useState(false);
+  const dispatch = useDispatch();
+  const token = useSelector(
+    (state: UserSliceStateSelector) => state.userStore.token
+  );
 
   const handleDeleteChange = () => {
     setDeleteChecked(!deleteChecked);
-    if (disableChecked) {
-      setDisableChecked(false);
-    }
   };
 
   const [dataUpdate, setDataUpdate] = useState<UserDataUpdate>({
@@ -75,6 +75,28 @@ const UserSettings: React.FC<UserSettingsProps> = ({
       [e.target.name]: e.target.value,
     }));
   };
+
+  const handleLogout = () => {
+    if (token) {
+      signOut(authFBConfig)
+        .then(() => {
+          console.log("Signed out successfully");
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      dispatch(tokenInfo(""));
+      dispatch(loginModeToggle(false));
+      authFBConfig.onAuthStateChanged((user) => {
+        if (user) {
+          localStorage.removeItem("user");
+        }
+      });
+    } else {
+      console.error("User is not authenticated. Cannot sign out.");
+    }
+  };
+
   const submitUpdateDatas = async (e: any) => {
     e.preventDefault();
     try {
@@ -82,10 +104,12 @@ const UserSettings: React.FC<UserSettingsProps> = ({
       const userRef = collection(db, "users");
       // @ts-ignore
       const customDocRef = doc(userRef, authFBConfig.lastNotifiedUid);
+
       // if (dataUpdate.password !== "") {
       //   await updatePassword(user, dataUpdate.password);
       //   console.log("password");
       // }
+
       if (user !== null) {
         if (dataUpdate.name !== "") {
           await updateProfile(user, {
@@ -110,6 +134,18 @@ const UserSettings: React.FC<UserSettingsProps> = ({
             status: dataUpdate.status,
           });
           console.log("status");
+        }
+        if (deleteChecked == true) {
+          try {
+            await user?.delete();
+            console.log("Kullanıcı hesabı silindi.");
+            await deleteDoc(customDocRef);
+            console.log("Belge başarıyla silindi.");
+            handleLogout();
+            setUserSettingsModalOpen(false);
+          } catch (error) {
+            console.error("Silme hatası:", error);
+          }
         }
         // if (dataUpdate.phone !== "") {
         //    try {
@@ -170,8 +206,8 @@ const UserSettings: React.FC<UserSettingsProps> = ({
   };
   useEffect(() => {
     fetchFromDB();
+    console.log(dataUpdate);
   }, [dataUpdate, userSettingsModalOpen]);
-
   return (
     <div>
       {userSettingsModalOpen && (
@@ -186,135 +222,46 @@ const UserSettings: React.FC<UserSettingsProps> = ({
                 className="text-red-500 cursor-pointer rounded-full hover:text-red-800"
               ></AiFillCloseCircle>
             </div>
-            <div className="flex space-x-10 bg-slate-200 p-2 rounded-md text-black">
-              <div>
-                <img
-                  src={authFBConfig.currentUser?.photoURL ?? ""}
-                  alt=""
-                  className="w-12 h-12 object-cover rounded-full"
-                />
-              </div>
-              <div className="grid grid-cols-2">
-                <p>{authFBConfig.currentUser?.displayName}</p>
-                <p>{authFBConfig.currentUser?.email}</p>
-                <p>{authFBConfig.currentUser?.phoneNumber}</p>
-              </div>
-            </div>
-            <div className="flex flex-wrap mt-3 bg-slate-200 p-2 rounded-md text-black space-x-2">
-              <h1 className="font-bold">Status:</h1>
-              <p className="max-w-[400px] inline-block">
-                {fetchedDatas.status}
-              </p>
-            </div>
 
+            <AccountDetails fetchedDatas={fetchedDatas}></AccountDetails>
             <form className="mt-3 space-y-3 bg-slate-200 p-2 rounded-md text-black">
               <h1 className="text-center font-bold border-b-2 border-black">
                 Change Status
               </h1>
-              <div className="flex items-center space-x-2 ">
-                <label className="w-full">Status:</label>
-                <input
-                  type="text"
-                  className="border-black border-2 rounded-lg"
-                  onChange={(e) => onchangeFunc(e)}
-                  id="status"
-                  name="status"
-                  value={dataUpdate.status}
-                />
-              </div>
+              <StatusSettings
+                onchangeFunc={onchangeFunc}
+                dataUpdate={dataUpdate}
+              ></StatusSettings>
               <h1 className="text-center font-bold border-b-2 border-black">
                 Change Informations
               </h1>
-              <div className="flex items-center space-x-2">
-                <label className="w-full">Name:</label>
-                <input
-                  type="text"
-                  className="border-black border-2 rounded-lg"
-                  onChange={(e) => onchangeFunc(e)}
-                  id="name"
-                  name="name"
-                  value={dataUpdate.name}
-                />
-              </div>
-              <div className="flex items-center space-x-2">
-                <label className="w-full">Email:</label>
-                <input
-                  type="email"
-                  className=" rounded-lg"
-                  onChange={(e) => onchangeFunc(e)}
-                  id="email"
-                  name="email"
-                  value={dataUpdate.email}
-                  disabled
-                />
-              </div>
-              <div className="flex items-center space-x-2">
-                <label className="w-full">Password:</label>
-                <input
-                  type="password"
-                  className=" rounded-lg"
-                  onChange={(e) => onchangeFunc(e)}
-                  id="password"
-                  name="password"
-                  value={dataUpdate.password}
-                  disabled
-                />
-              </div>
-              <div className="flex items-center space-x-2">
-                <label className="w-full">Phone:</label>
-                <input
-                  type="text"
-                  className=" rounded-lg"
-                  onChange={(e) => onchangeFunc(e)}
-                  id="phone"
-                  name="phone"
-                  value={dataUpdate.phone}
-                  disabled
-                />
-              </div>
-              <div className="mt-3 space-y-3">
-                <h1 className="text-center font-bold border-b-2 border-black">
-                  Change Avatar
-                </h1>
-                <div className="grid grid-cols-6 space-x-2">
-                  {images.map((image, index) => (
-                    <img
-                      key={image.id}
-                      src={image.url}
-                      alt="img"
-                      className={`h-20 rounded-full cursor-pointer mxx-auto p-1 ${
-                        selectedImageIndex === index
-                          ? "border-4 border-red-900 transform hover:scale-110 transition-transform duration-500"
-                          : ""
-                      }`}
-                      onClick={() => handleImageClick(index)}
-                    />
-                  ))}
-                </div>
-              </div>
+              <DisplayNameSettings
+                onchangeFunc={onchangeFunc}
+                dataUpdate={dataUpdate}
+              ></DisplayNameSettings>
+              <EmailSettings
+                onchangeFunc={onchangeFunc}
+                dataUpdate={dataUpdate}
+              ></EmailSettings>
+              <PasswordSettings
+                onchangeFunc={onchangeFunc}
+                dataUpdate={dataUpdate}
+              ></PasswordSettings>
+              <PhoneSettings
+                onchangeFunc={onchangeFunc}
+                dataUpdate={dataUpdate}
+              ></PhoneSettings>
+              <AvatarSettings
+                selectedImageIndex={selectedImageIndex}
+                handleImageClick={handleImageClick}
+              ></AvatarSettings>
               <h1 className="text-center font-bold border-b-2 border-black">
-                Disable&Delete Account
+                Delete Account
               </h1>
-              <div className="flex items-center space-x-1">
-                <label htmlFor="disableAccount">Disable:</label>
-                <input
-                  type="checkbox"
-                  id="disableAccount"
-                  checked={disableChecked}
-                  onChange={handleDisableChange}
-                  disabled
-                />
-              </div>
-              <div className="flex items-center space-x-1">
-                <label htmlFor="deleteAccount">Delete:</label>
-                <input
-                  type="checkbox"
-                  id="deleteAccount"
-                  checked={deleteChecked}
-                  onChange={handleDeleteChange}
-                  disabled
-                />
-              </div>
+              <DeleteSettings
+                deleteChecked={deleteChecked}
+                handleDeleteChange={handleDeleteChange}
+              ></DeleteSettings>
               <div className="text-center">
                 <button
                   className="bg-blue-500 text-white py-1 px-6 rounded cursor-pointer"
@@ -327,6 +274,12 @@ const UserSettings: React.FC<UserSettingsProps> = ({
           </div>
         </div>
       )}
+      {/* {verifyEmailModal && (
+        <VerifyEmailModal
+          setVerifyEmailModal={setVerifyEmailModal}
+          verifyEmailModal={verifyEmailModal}
+        ></VerifyEmailModal>
+      )} */}
     </div>
   );
 };

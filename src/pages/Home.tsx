@@ -15,7 +15,7 @@ import { authFBConfig, db } from "../config/config";
 import Signup from "../components/Right Bar/Auth/Signup";
 import { MessageSliceStateSelector } from "../types/MessageTypes";
 import UserInfo from "../components/Right Bar/Chat/UserInfo";
-import UserSettings from "../components/Left Bar/Users/UserSettings";
+import UserSettings from "../components/Left Bar/Users/UserSettings/UserSettings";
 import { DocumentData, collection, getDocs } from "@firebase/firestore";
 
 const Home = () => {

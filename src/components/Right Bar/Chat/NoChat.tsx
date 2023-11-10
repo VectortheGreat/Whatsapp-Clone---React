@@ -6,7 +6,7 @@ const NoChat = () => {
         alt="Whatsapp Clone Image"
         className="w-96 h-96 my-10"
       />
-      <h1>Welcome Whatsapp Clone</h1>
+      <h1>Welcome to Whatsapp Clone</h1>
     </div>
   );
 };
