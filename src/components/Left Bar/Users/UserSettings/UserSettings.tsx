@@ -4,7 +4,15 @@ import { useEffect, useState } from "react";
 import { authFBConfig, db } from "../../../../config/config";
 import { AiFillCloseCircle } from "react-icons/ai";
 import { toast } from "react-toastify";
-import { User, signOut, updateProfile } from "firebase/auth";
+import {
+  User,
+  onAuthStateChanged,
+  sendEmailVerification,
+  signOut,
+  updateEmail,
+  updateProfile,
+  verifyBeforeUpdateEmail,
+} from "firebase/auth";
 import {
   collection,
   doc,
@@ -28,6 +36,7 @@ import {
   UserDataUpdate,
   UserSettingsProps,
 } from "../../../../types/UserSettingsTypes";
+import VerifyEmailModal from "./Email/VerifyEmailModal";
 
 const UserSettings: React.FC<UserSettingsProps> = ({
   setUserSettingsModalOpen,
@@ -43,7 +52,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
   };
 
   const [deleteChecked, setDeleteChecked] = useState(false);
-  // const [verifyEmailModal, setVerifyEmailModal] = useState(false);
+  const [verifyEmailModal, setVerifyEmailModal] = useState(false);
   const dispatch = useDispatch();
   const token = useSelector(
     (state: UserSliceStateSelector) => state.userStore.token
@@ -68,14 +77,14 @@ const UserSettings: React.FC<UserSettingsProps> = ({
     photo: "",
     status: "",
   });
-
+  // console.log(authFBConfig);
+  // console.log(authFBConfig.currentUser);
   const onchangeFunc = (e: any) => {
     setDataUpdate((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
-
   const handleLogout = () => {
     if (token) {
       signOut(authFBConfig)
@@ -96,7 +105,6 @@ const UserSettings: React.FC<UserSettingsProps> = ({
       console.error("User is not authenticated. Cannot sign out.");
     }
   };
-
   const submitUpdateDatas = async (e: any) => {
     e.preventDefault();
     try {
@@ -119,6 +127,15 @@ const UserSettings: React.FC<UserSettingsProps> = ({
             name: dataUpdate.name,
           });
           console.log("name");
+        }
+        if (dataUpdate.email !== "") {
+          console.log(dataUpdate.email);
+          await verifyBeforeUpdateEmail(user, dataUpdate.email as string);
+          await onAuthStateChanged;
+          await updateDoc(customDocRef, {
+            email: dataUpdate.email,
+          });
+          console.log("email");
         }
         if (dataUpdate.photo !== "") {
           await updateProfile(user, {
@@ -170,13 +187,6 @@ const UserSettings: React.FC<UserSettingsProps> = ({
         //   });
         //   console.log("phone");
         // }
-        // if (dataUpdate.email !== "") {
-        //   await updateEmail(user, dataUpdate.email);
-        //   await updateDoc(customDocRef, {
-        //     email: dataUpdate.email,
-        //   });
-        //   console.log("email");
-        // }
       }
       setDataUpdate({
         name: "",
@@ -206,7 +216,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
   };
   useEffect(() => {
     fetchFromDB();
-    console.log(dataUpdate);
+    // console.log(dataUpdate);
   }, [dataUpdate, userSettingsModalOpen]);
   return (
     <div>
@@ -242,6 +252,7 @@ const UserSettings: React.FC<UserSettingsProps> = ({
               <EmailSettings
                 onchangeFunc={onchangeFunc}
                 dataUpdate={dataUpdate}
+                setVerifyEmailModal={setVerifyEmailModal}
               ></EmailSettings>
               <PasswordSettings
                 onchangeFunc={onchangeFunc}
@@ -274,12 +285,12 @@ const UserSettings: React.FC<UserSettingsProps> = ({
           </div>
         </div>
       )}
-      {/* {verifyEmailModal && (
+      {verifyEmailModal && (
         <VerifyEmailModal
           setVerifyEmailModal={setVerifyEmailModal}
           verifyEmailModal={verifyEmailModal}
         ></VerifyEmailModal>
-      )} */}
+      )}
     </div>
   );
 };

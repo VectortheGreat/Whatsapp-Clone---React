@@ -17,6 +17,7 @@ import { MessageSliceStateSelector } from "../types/MessageTypes";
 import UserInfo from "../components/Right Bar/Chat/UserInfo";
 import UserSettings from "../components/Left Bar/Users/UserSettings/UserSettings";
 import { DocumentData, collection, getDocs } from "@firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -69,6 +70,7 @@ const Home = () => {
     fetchFromDB();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <div>
       <header className="grid grid-cols-12">
